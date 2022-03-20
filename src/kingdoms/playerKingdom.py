@@ -3,9 +3,10 @@ import arcade
 from tiles.building import Office
 from tiles.tile import Tile
 
+MAIN_PATH = "../assets/resource/"
 
 class Kingdom:
-    def __init__(self, tile_list, border_list, bar_list, window):
+    def __init__(self, tile_list, border_list, bar_list):
 
         self._food = 750
         self._gold = 1000
@@ -16,20 +17,48 @@ class Kingdom:
         self.world.add_sprite_list(name="tiles", use_spatial_hash=True, sprite_list=tile_list)
         self.world.add_sprite_list(name="toolbars", use_spatial_hash=True, sprite_list=bar_list)
 
-        self.office = Office(475, 475, "office", window)
+        self.office = Office(475, 475, "office")
         self.world.add_sprite(name="office", sprite=self.office)
 
-        self.world.add_sprite(sprite=arcade.Sprite("../assets/resource/food.png", 1, center_x=45,
-                                                   center_y=635), name="food")
+        self.world.add_sprite(sprite=arcade.Sprite(f"{MAIN_PATH}food.png", 1, center_x=55, center_y=635), name="food")
+        self.world.add_sprite(sprite=arcade.Sprite(f"{MAIN_PATH}gold.png", 1, center_x=280, center_y=635), name="gold")
+        self.world.add_sprite(sprite=arcade.Sprite(f"{MAIN_PATH}happiness.png", 1, center_x=505, center_y=635),
+                              name="happiness")
+        self.world.add_sprite(sprite=arcade.Sprite(f"{MAIN_PATH}population.png", 1, center_x=780, center_y=635),
+                              name="population")
+
         self.world.add_sprite_list(name="border", use_spatial_hash=True, sprite_list=border_list)
 
     def draw(self):
         self.world.draw()
+
+        # labelling resources
         arcade.draw_text(
             f"Food: {self._food}",
             start_x=75,
-            start_y=625,
-            font_size=24
+            start_y=627.5,
+            font_size=16
+        )
+
+        arcade.draw_text(
+            f"Gold: {self._gold}",
+            start_x=300,
+            start_y=627.5,
+            font_size=16
+        )
+
+        arcade.draw_text(
+            f"Happiness: {self._happiness}",
+            start_x=525,
+            start_y=627.5,
+            font_size=16
+        )
+
+        arcade.draw_text(
+            f"Population: {self._population}",
+            start_x=800,
+            start_y=627.5,
+            font_size=16
         )
 
     def setup_terrain(self):
