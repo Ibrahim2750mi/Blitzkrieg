@@ -1,8 +1,8 @@
 import arcade
 
 import config as cfg
-from tiles.tile import Tile
 from tiles.building import Building
+from tiles.tile import Tile
 
 
 class Game(arcade.Window):
@@ -30,6 +30,8 @@ class Game(arcade.Window):
 
     def setup(self) -> None:
         """Set up the game here. Call this function to restart the game."""
+        # TODO: resource generation and kingdom class.
+
         self.land_tile_list = arcade.SpriteList(use_spatial_hash=True)
         self.border_land_tile_list = arcade.SpriteList(use_spatial_hash=True)
         self.bar_list = arcade.SpriteList(use_spatial_hash=True)
@@ -56,7 +58,7 @@ class Game(arcade.Window):
         pass
 
     def on_mouse_press(self, x: float, y: float, button: int, key_modifiers: int) -> None:
-        print(self.buildings_list[0].collides_with_point((x, y)))
+        pass
 
     def on_draw(self) -> None:
         """Render the screen."""
