@@ -1,9 +1,11 @@
 import arcade
 
+from misc.misc_classes import LabelList
 from tiles.building import Office
 from tiles.tile import Tile
 
 MAIN_PATH = "../assets/resource/"
+
 
 class Kingdom:
     def __init__(self, tile_list, border_list, bar_list):
@@ -13,11 +15,17 @@ class Kingdom:
         self._happiness = 100
         self._population = 500
 
+        self._farmers = 0
+        self._soldiers = 0
+        self._workers = 0
+
+        self.label_list = LabelList()
+
         self.world = arcade.Scene()
         self.world.add_sprite_list(name="tiles", use_spatial_hash=True, sprite_list=tile_list)
         self.world.add_sprite_list(name="toolbars", use_spatial_hash=True, sprite_list=bar_list)
 
-        self.office = Office(475, 475, "office")
+        self.office = Office(475, 475, "office", self)
         self.world.add_sprite(name="office", sprite=self.office)
 
         self.world.add_sprite(sprite=arcade.Sprite(f"{MAIN_PATH}food.png", 1, center_x=55, center_y=635), name="food")
@@ -28,38 +36,13 @@ class Kingdom:
                               name="population")
 
         self.world.add_sprite_list(name="border", use_spatial_hash=True, sprite_list=border_list)
+        self.add_labels()
 
     def draw(self):
         self.world.draw()
 
         # labelling resources
-        arcade.draw_text(
-            f"Food: {self._food}",
-            start_x=75,
-            start_y=627.5,
-            font_size=16
-        )
-
-        arcade.draw_text(
-            f"Gold: {self._gold}",
-            start_x=300,
-            start_y=627.5,
-            font_size=16
-        )
-
-        arcade.draw_text(
-            f"Happiness: {self._happiness}",
-            start_x=525,
-            start_y=627.5,
-            font_size=16
-        )
-
-        arcade.draw_text(
-            f"Population: {self._population}",
-            start_x=800,
-            start_y=627.5,
-            font_size=16
-        )
+        self.label_list.draw()
 
     def setup_terrain(self):
         co_ord_list = []
@@ -185,3 +168,56 @@ class Kingdom:
                                                                     center_y=350))
         self.world.get_sprite_list("toolbars").append(arcade.Sprite("../assets/misc/dialog_box.png", 1, center_x=540,
                                                                     center_y=650))
+
+    def add_labels(self):
+        self.label_list.append(arcade.Text(
+            f"Food(f): {self._food}",
+            start_x=75,
+            start_y=627.5,
+            font_size=16
+        ))
+
+        self.label_list.append(arcade.Text(
+            f"Gold(g): {self._gold}",
+            start_x=300,
+            start_y=627.5,
+            font_size=16
+        ))
+
+        self.label_list.append(arcade.Text(
+            f"Happiness(h): {self._happiness}",
+            start_x=525,
+            start_y=627.5,
+            font_size=16
+        ))
+
+        self.label_list.append(arcade.Text(
+            f"Population(p): {self._population}",
+            start_x=800,
+            start_y=627.5,
+            font_size=16
+        ))
+
+    @property
+    def farmers(self):
+        return self._farmers
+
+    @property
+    def workers(self):
+        return self._workers
+
+    @property
+    def soldiers(self):
+        return self._soldiers
+
+    @farmers.setter
+    def farmers(self, number):
+        self._farmers = number
+
+    @workers.setter
+    def workers(self, number):
+        self._workers = number
+
+    @soldiers.setter
+    def soldiers(self, number):
+        self._soldiers = number
