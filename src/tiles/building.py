@@ -4,7 +4,7 @@ import arcade.gui
 from config import PATH
 from misc.misc_classes import AdvanceUiInputText, AdvancedUiManager
 
-MAIN_PATH = f"{PATH}/../../assets/buildings/"
+MAIN_PATH = f"{PATH}/../assets/buildings/"
 
 
 class Building(arcade.Sprite):
@@ -42,11 +42,14 @@ class Office(Building):
         self.heading_text.draw()
         self.manager.draw()
 
-    @staticmethod
-    def _on_click_manage_building(event: arcade.gui.UIOnClickEvent):
-        print("called", event.pos, event.source)
+    def _on_click_manage_building(self, _: arcade.gui.UIOnClickEvent):
+        self.heading_text.text = "Manage Buildings:"
+        self.heading_text.x = 840
 
-    def _on_click_manage_population(self, event: arcade.gui.UIOnClickEvent):
+        self.manager.clear()
+        self.v_box.clear()
+
+    def _on_click_manage_population(self, _: arcade.gui.UIOnClickEvent):
         self.heading_text.text = "Manage Population:"
         self.heading_text.x = 840
 
@@ -98,7 +101,7 @@ class Office(Building):
             )
         )
 
-    def _on_click_capital_info(self, event: arcade.gui.UIOnClickEvent):
+    def _on_click_capital_info(self, _: arcade.gui.UIOnClickEvent):
         self.heading_text.text = "Capital Info:"
         self.heading_text.x = 875
 
@@ -139,13 +142,13 @@ class Office(Building):
             )
         )
 
-    def _on_click_back_button(self, event: arcade.gui.UIOnClickEvent):
+    def _on_click_back_button(self, _: arcade.gui.UIOnClickEvent):
         self.manager.clear()
         self.v_box.clear()
         self.setup_default_menu()
 
-    def _on_click_save_button_manage_population(self, event: arcade.gui.UIOnClickEvent):
-        if sum([i.text for i in self.manage_population_widget_list]) <= self.kingdom.population:
+    def _on_click_save_button_manage_population(self, _: arcade.gui.UIOnClickEvent):
+        if sum([i.text for i in self.manage_population_widget_list[-3:]]) <= self.kingdom.population:
             self.kingdom.farmers = self.manage_population_widget_list[0].text
             self.kingdom.workers = self.manage_population_widget_list[1].text
             self.kingdom.soldiers = self.manage_population_widget_list[2].text

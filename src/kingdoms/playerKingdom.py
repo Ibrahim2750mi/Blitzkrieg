@@ -2,13 +2,14 @@ import base64
 import json
 
 import arcade
+import arcade.gui
 
 from config import PATH
 from misc.misc_classes import AdvancedUiFileDialogOpen, AdvancedUiManager, LabelList
 from tiles.building import Office
 from tiles.tile import Tile
 
-MAIN_PATH = f"{PATH}/../../assets/resource/"
+MAIN_PATH = f"{PATH}/../assets/resource/"
 
 
 class Kingdom:
@@ -25,7 +26,7 @@ class Kingdom:
 
         self._turn_number = 1
 
-        self.label_list = LabelList()
+        self.resource_label_list = LabelList()
 
         self.world = arcade.Scene()
         self.world.add_sprite_list(name="tiles", use_spatial_hash=True, sprite_list=tile_list)
@@ -35,10 +36,10 @@ class Kingdom:
         self.world.add_sprite(name="office", sprite=self.office)
 
         self.world.add_sprite(sprite=arcade.Sprite(f"{MAIN_PATH}food.png", 1, center_x=80, center_y=635), name="food")
-        self.world.add_sprite(sprite=arcade.Sprite(f"{MAIN_PATH}gold.png", 1, center_x=305, center_y=635), name="gold")
-        self.world.add_sprite(sprite=arcade.Sprite(f"{MAIN_PATH}happiness.png", 1, center_x=530, center_y=635),
+        self.world.add_sprite(sprite=arcade.Sprite(f"{MAIN_PATH}gold.png", 1, center_x=230, center_y=635), name="gold")
+        self.world.add_sprite(sprite=arcade.Sprite(f"{MAIN_PATH}happiness.png", 1, center_x=380, center_y=635),
                               name="happiness")
-        self.world.add_sprite(sprite=arcade.Sprite(f"{MAIN_PATH}population.png", 1, center_x=805, center_y=635),
+        self.world.add_sprite(sprite=arcade.Sprite(f"{MAIN_PATH}population.png", 1, center_x=570, center_y=635),
                               name="population")
 
         self.world.add_sprite_list(name="border", use_spatial_hash=True, sprite_list=border_list)
@@ -47,7 +48,8 @@ class Kingdom:
         self.manager = AdvancedUiManager()
         self.manager.enable()
 
-        self.v_box = arcade.gui.UIBoxLayout()
+        self.v_box = arcade.gui.UIBoxLayout(space_between=10)
+        self.h_box = arcade.gui.UIBoxLayout(space_between=800, vertical=False)
 
         self.setup_menu()
 
@@ -58,7 +60,7 @@ class Kingdom:
         self.world.draw()
 
         # labelling resources
-        self.label_list.draw()
+        self.resource_label_list.draw()
 
         # menu
         self.manager.draw()
@@ -181,72 +183,101 @@ class Kingdom:
 
         co_ord_list.clear()
 
-        self.world.get_sprite_list("toolbars").append(arcade.Sprite(f"{PATH}/../../assets/misc/dialog_box.png", 1, center_x=540,
-                                                                    center_y=50))
-        self.world.get_sprite_list("toolbars").append(arcade.Sprite(f"{PATH}/../../assets/misc/info_box.png", 1, center_x=940,
-                                                                    center_y=350))
-        self.world.get_sprite_list("toolbars").append(arcade.Sprite(f"{PATH}/../../assets/misc/dialog_box.png", 1, center_x=540,
-                                                                    center_y=650))
+        self.world.get_sprite_list("toolbars").append(
+            arcade.Sprite(f"{PATH}/../assets/misc/dialog_box.png", 1, center_x=540,
+                          center_y=50))
+        self.world.get_sprite_list("toolbars").append(
+            arcade.Sprite(f"{PATH}/../assets/misc/info_box.png", 1, center_x=940,
+                          center_y=350))
+        self.world.get_sprite_list("toolbars").append(
+            arcade.Sprite(f"{PATH}/../assets/misc/dialog_box.png", 1, center_x=540,
+                          center_y=650))
 
     def add_labels(self):
-        self.label_list.append(arcade.Text(
+        self.resource_label_list.append(arcade.Text(
             f"Food(f): {self._food}",
             start_x=100,
             start_y=627.5,
-            font_size=16
+            font_size=12
         ))
 
-        self.label_list.append(arcade.Text(
+        self.resource_label_list.append(arcade.Text(
             f"Gold(g): {self._gold}",
-            start_x=325,
+            start_x=250,
             start_y=627.5,
-            font_size=16
+            font_size=12
         ))
 
-        self.label_list.append(arcade.Text(
+        self.resource_label_list.append(arcade.Text(
             f"Happiness(h): {self._happiness}",
-            start_x=550,
+            start_x=400,
             start_y=627.5,
-            font_size=16
+            font_size=12
         ))
 
-        self.label_list.append(arcade.Text(
+        self.resource_label_list.append(arcade.Text(
             f"Population(p): {self._population}",
-            start_x=825,
+            start_x=590,
             start_y=627.5,
-            font_size=16
+            font_size=12
         ))
 
     def setup_menu(self):
-        menu_button = arcade.gui.UIFlatButton(text="⚙", width=25, font_size=16, style={"bg_color": (127, 201, 255)}, height=20)
+        menu_button = arcade.gui.UIFlatButton(text="⚙", width=25, font_size=12, style={"bg_color": (0, 0, 0),
+                                                                                       "font_color": (
+                                                                                           255, 255, 255)},
+                                              height=20)
         menu_button.on_click = self._on_click_menu_button
-        self.v_box.add(menu_button)
+
+        next_turn_button = arcade.gui.UIFlatButton(text="Next Turn", width=150, height=25)
+        next_turn_button.on_click = self._on_click_next_turn_button
+
+        self.h_box.add(menu_button)
+        self.h_box.add(next_turn_button)
 
         self.manager.add(
             arcade.gui.UIAnchorWidget(
                 anchor_x="left",
                 anchor_y="bottom",
                 align_x=10,
-                align_y=627.5,
-                child=self.v_box
+                align_y=623,
+                child=self.h_box
             )
         )
 
-    def _on_click_menu_button(self, event: arcade.gui.UIOnClickEvent):
+    def _on_click_next_turn_button(self, _: arcade.gui.UIOnClickEvent):
+        self._turn_number += 1
+        self._food += 3 * self._farmers - self._workers - 2 * self._soldiers
+        self._gold += - self._farmers + 3 * self._workers - 2 * self._soldiers
 
+        if self._happiness <= 100:
+            if self.unhappiness > 0:
+                self._happiness -= self.unhappiness
+            elif self.unhappiness == 0:
+                self._happiness += 3
+        if self._happiness > 100:
+            self._happiness = 100
+
+        self.resource_label_list.clear()
+        self.add_labels()
+
+    def _on_click_menu_button(self, _: arcade.gui.UIOnClickEvent):
         save_button = arcade.gui.UIFlatButton(text="Save Game", width=250, font_size=24)
         save_button.on_click = self._on_click_save_button
 
         load_button = arcade.gui.UIFlatButton(text="Load Game", width=250, font_size=24)
         load_button.on_click = self._on_click_load_button
 
+        back_button = arcade.gui.UIFlatButton(text="Back to Game", width=250, font_size=24)
+        back_button.on_click = self._on_click_back_button
+
         quit_button = arcade.gui.UIFlatButton(text="Quit", width=250, font_size=24)
         quit_button.on_click = self._on_click_quit_button
 
         self.v_box.add(save_button)
         self.v_box.add(load_button)
+        self.v_box.add(back_button)
         self.v_box.add(quit_button)
-        
 
         self.manager.add(
             arcade.gui.UIAnchorWidget(
@@ -256,7 +287,12 @@ class Kingdom:
             )
         )
 
-    def _on_click_save_button(self, event: arcade.gui.UIOnClickEvent):
+    def _on_click_back_button(self, _: arcade.gui.UIOnClickEvent):
+        self.manager.clear()
+        self.v_box.clear()
+        self.setup_menu()
+
+    def _on_click_save_button(self, _: arcade.gui.UIOnClickEvent):
         save_data = {
             "food": self._food,
             "gold": self._gold,
@@ -267,31 +303,30 @@ class Kingdom:
             "workers": self._workers,
         }
         encoded_data = base64.b64encode(json.dumps(save_data).encode("utf-8"))
-        with open(f"{PATH}/../../data/Turn_{self._turn_number}", "wb") as f:
+        with open(f"{PATH}/../data/Turn_{self._turn_number}", "wb") as f:
             f.write(encoded_data)
 
-        
-
-    def _on_click_quit_button(self, event: arcade.gui.UIOnClickEvent):
+    @staticmethod
+    def _on_click_quit_button(_: arcade.gui.UIOnClickEvent):
         arcade.exit()
 
     def _on_click_load_button(self, _: arcade.gui.UIOnClickEvent):
         file_dialog = AdvancedUiFileDialogOpen(self.main_window, self.main_view)
         file_dialog.setup()
         self.main_window.show_view(file_dialog)
-        print("first")
 
     def switched_view(self, file_name):
-        with open(f"{PATH}/../../data/{file_name}", "rb") as f:
+        with open(f"{PATH}/../data/{file_name}", "rb") as f:
             enc = f.read()
-        decoded_data = json.loads(base64.b64.decode(enc))
-        decoded_data.get("food", 0) = self._food
-        decoded_data.get("gold", 0) = self._gold
-        decoded_data.get("happiness", 0) = self._happiness
-        decoded_data.get("population", 0) = self._population
-        decoded_data.get("farmers", 0) = self._farmers
-        decoded_data.get("soldiers",0) = self._soldiers
-        decoded_data.get("workers",0) = self._workers
+        decoded_data = json.loads(base64.b64decode(enc))
+
+        self._food = decoded_data.get("food", 0)
+        self._gold = decoded_data.get("gold", 0)
+        self._happiness = decoded_data.get("happiness", 0)
+        self._population = decoded_data.get("population", 0)
+        self._farmers = decoded_data.get("farmers", 0)
+        self._soldiers = decoded_data.get("soldiers", 0)
+        self._workers = decoded_data.get("workers", 0)
 
     @property
     def farmers(self):
@@ -332,5 +367,4 @@ class Kingdom:
             n += abs(self._food) / 10
         if self._gold != abs(self._gold):
             n += abs(self._gold) / 10
-        return self.unemployed / 100 + n
-
+        return int(self.unemployed / 100 + n)
