@@ -172,28 +172,28 @@ class Kingdom:
     def add_labels(self):
         self.label_list.append(arcade.Text(
             f"Food(f): {self._food}",
-            start_x=75,
+            start_x=100,
             start_y=627.5,
             font_size=16
         ))
 
         self.label_list.append(arcade.Text(
             f"Gold(g): {self._gold}",
-            start_x=300,
+            start_x=325,
             start_y=627.5,
             font_size=16
         ))
 
         self.label_list.append(arcade.Text(
             f"Happiness(h): {self._happiness}",
-            start_x=525,
+            start_x=550,
             start_y=627.5,
             font_size=16
         ))
 
         self.label_list.append(arcade.Text(
             f"Population(p): {self._population}",
-            start_x=800,
+            start_x=825,
             start_y=627.5,
             font_size=16
         ))
@@ -221,3 +221,20 @@ class Kingdom:
     @soldiers.setter
     def soldiers(self, number):
         self._soldiers = number
+
+    @property
+    def population(self):
+        return self._population
+
+    @property
+    def unemployed(self):
+        return self.population - self.farmers - self.workers - self.soldiers
+
+    @property
+    def unhappiness(self):
+        n = 0
+        if self._food != abs(self._food):
+            n += abs(self._food) / 10
+        if self._gold != abs(self._gold):
+            n += abs(self._gold) / 10
+        return self.unemployed / 100 + n

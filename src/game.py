@@ -1,9 +1,14 @@
+import pathlib
+
 import arcade
 from arcade import MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT
 
 import config as cfg
 from kingdoms import playerKingdom
 
+
+
+print(pathlib.Path().absolute())
 
 class Game(arcade.Window):
     """
@@ -51,11 +56,11 @@ class Game(arcade.Window):
         pass
 
     def on_mouse_press(self, x: float, y: float, button: int, key_modifiers: int) -> None:
-        if MOUSE_BUTTON_RIGHT:
+        if button == MOUSE_BUTTON_LEFT:
             office = self.player.office
             if office.collides_with_point((x, y)):
                 office.triggered = True
-        elif MOUSE_BUTTON_LEFT:
+        elif button == MOUSE_BUTTON_RIGHT:
             self.player.office.triggered = False
 
     def on_draw(self) -> None:
