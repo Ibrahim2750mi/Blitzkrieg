@@ -1,10 +1,10 @@
 import arcade
 import arcade.gui
-import pyglet
 
+from config import PATH
 from misc.misc_classes import AdvanceUiInputText, AdvancedUiManager
 
-MAIN_PATH = "../assets/buildings/"
+MAIN_PATH = f"{PATH}/../../assets/buildings/"
 
 
 class Building(arcade.Sprite):
@@ -12,6 +12,10 @@ class Building(arcade.Sprite):
     def __init__(self, x, y, type_of_build, kingdom):
         super(Building, self).__init__(f"{MAIN_PATH}{type_of_build}.png", center_x=x, center_y=y)
         self.kingdom = kingdom
+        self.manager = AdvancedUiManager()
+        self.manager.enable()
+
+        self.v_box = arcade.gui.UIBoxLayout(space_between=18)
 
 
 class Office(Building):
@@ -25,11 +29,6 @@ class Office(Building):
             start_y=563,
             font_size=16
         )
-        # a UIManager to handle the UI.
-        self.manager = AdvancedUiManager()
-        self.manager.enable()
-
-        self.v_box = arcade.gui.UIBoxLayout(space_between=40)
 
         self.setup_default_menu()
 
@@ -73,7 +72,7 @@ class Office(Building):
         save_button = arcade.gui.UIFlatButton(text="SAVE", width=250)
         save_button.on_click = self._on_click_save_button_manage_population
 
-        self.v_box = arcade.gui.UIBoxLayout(space_between=10)
+        self.v_box.clear()
 
         # self.v_box.add(farmers)
         self.v_box.add(farmer_label)
@@ -94,7 +93,7 @@ class Office(Building):
                 anchor_x="left",
                 anchor_y="bottom",
                 align_x=810,
-                align_y=200,
+                align_y=150,
                 child=self.v_box
             )
         )
@@ -105,7 +104,7 @@ class Office(Building):
 
         self.manager.clear()
 
-        self.v_box = arcade.gui.UIBoxLayout(space_between=20)
+        self.v_box.clear()
 
         net_food = 3 * self.kingdom.farmers - self.kingdom.workers - 2 * self.kingdom.soldiers
         net_gold = 3 * self.kingdom.workers - self.kingdom.farmers - 2 * self.kingdom.soldiers
@@ -142,7 +141,7 @@ class Office(Building):
 
     def _on_click_back_button(self, event: arcade.gui.UIOnClickEvent):
         self.manager.clear()
-        self.v_box = arcade.gui.UIBoxLayout(space_between=40)
+        self.v_box.clear()
         self.setup_default_menu()
 
     def _on_click_save_button_manage_population(self, event: arcade.gui.UIOnClickEvent):
@@ -165,7 +164,7 @@ class Office(Building):
                     anchor_x="left",
                     anchor_y="bottom",
                     align_x=810,
-                    align_y=150,
+                    align_y=100,
                     child=self.v_box
                 )
             )

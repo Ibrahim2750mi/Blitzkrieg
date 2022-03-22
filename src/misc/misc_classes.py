@@ -1,3 +1,4 @@
+import os
 import string
 from typing import Optional
 
@@ -7,6 +8,18 @@ from arcade.gui import UIEvent, UIMouseDragEvent, UIMouseEvent, UIMousePressEven
     UITextEvent, UITextMotionEvent, UITextMotionSelectEvent
 from pyglet.event import EVENT_HANDLED, EVENT_UNHANDLED
 
+from config import PATH
+
+
+class AdvancedUiCheckButton(arcade.gui.UIFlatButton):
+    def __init__(self, name):
+        super(AdvancedUiCheckButton, self).__init__(text="Select", width=250, style={"bg_color": (0, 200, 0), "bg_color_pressed": arcade.color.SKY_BLUE})
+        self.name = name
+        self.clicked = False
+
+    def on_click(self, _: arcade.gui.UIOnClickEvent):
+        self.text = "SELECTED"
+        self.clicked = True
 
 class AdvancedUiManager(arcade.gui.UIManager):
     def __init__(self, *args):
@@ -102,6 +115,71 @@ class AdvanceUiInputText(arcade.gui.UIInputText):
             return int(self.doc.text)
         else:
             return self.doc.text
+
+
+class AdvancedUiFileDialogOpen(arcade.View):
+    def __init__(self, main_window, main_view):
+        super().__init__()
+
+        self.save_file_icon_list = None
+        self.save_file_names_list = None
+
+        self.widget_manager = None
+
+        self.v_box = None
+
+        self.button_list = None
+
+        self.main_window = main_window
+        self.main_view = main_view
+
+    def setup(self) -> None:
+        self.save_file_icon_list = arcade.SpriteList()
+        self.save_file_names_list = LabelList()
+
+        self.button_list = []
+
+        self.widget_manager = AdvancedUiManager()
+        self.widget_manager.enable()
+
+        self.v_box = arcade.gui.UIBoxLayout(space_between=9)
+
+        save_file_icon = arcade.load_texture(f"{PATH}/../../assets/misc/save.png")
+        last_y = 0
+        save_file_names = [file for file in os.listdir(f"{PATH}/../../data/") if 'Turn_' in file and '.' not in file]
+        for i, name in enumerate(save_file_names):
+            icon = arcade.Sprite(texture=save_file_icon, center_x=30, center_y=600-(i*60))
+            name = arcade.Text(text=name, width=250, start_x=90, start_y=600-(i*60))
+            button = AdvancedUiCheckButton(name)
+            self.save_file_icon_list.append(icon)
+            self.save_file_names_list.append(name)
+            self.v_box.add(button)
+            self.button_list.append(button)
+            last_y = 600-(i*60)
+
+        self.widget_manager.add(
+            arcade.gui.UIAnchorWidget(
+                anchor_x="right",
+                anchor_y="bottom",
+                align_x=-100,
+                align_y=last_y- 25,
+                child=self.v_box
+            )
+        )
+
+    def on_update(self, delta_time: float):
+        for button in self.button_list:
+            if button.clicked == True:
+                self.main_view.switch_view_to_load_file(button.name)
+                self.main_window.show_view(self.main_view)
+
+    def on_draw(self) -> None:
+        self.clear()
+
+        self.save_file_icon_list.draw()
+        self.save_file_names_list.draw()
+        self.widget_manager.draw()
+
 
 
 class LabelList(list):

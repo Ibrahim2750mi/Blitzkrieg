@@ -1,5 +1,3 @@
-import pathlib
-
 import arcade
 from arcade import MOUSE_BUTTON_LEFT, MOUSE_BUTTON_RIGHT
 
@@ -7,17 +5,14 @@ import config as cfg
 from kingdoms import playerKingdom
 
 
-
-print(pathlib.Path().absolute())
-
-class Game(arcade.Window):
+class Game(arcade.View):
     """
     Main application class.
     """
 
-    def __init__(self):
+    def __init__(self, window):
         # Call the parent class and set up the window
-        super().__init__(cfg.SCREEN_WIDTH, cfg.SCREEN_HEIGHT, cfg.SCREEN_TITLE)
+        super().__init__()
 
         # These are 'lists' that keep track of our sprites. Each sprite should
         # go into a list.
@@ -27,7 +22,7 @@ class Game(arcade.Window):
 
         # player
         self.player = None
-
+        self.window = window
         # Separate variable that holds the player sprite
 
         arcade.set_background_color(arcade.color.SMOKY_BLACK)
@@ -39,7 +34,7 @@ class Game(arcade.Window):
         self.border_land_tile_list = arcade.SpriteList(use_spatial_hash=True)
         self.bar_list = arcade.SpriteList(use_spatial_hash=True)
 
-        self.player = playerKingdom.Kingdom(self.land_tile_list, self.border_land_tile_list, self.bar_list)
+        self.player = playerKingdom.Kingdom(self.land_tile_list, self.border_land_tile_list, self.bar_list, self.window, self)
 
         self.player.setup_terrain()
 
@@ -76,8 +71,10 @@ class Game(arcade.Window):
 
 def main():
     """Main function"""
-    window = Game()
-    window.setup()
+    window = arcade.Window(cfg.SCREEN_WIDTH, cfg.SCREEN_HEIGHT, cfg.SCREEN_TITLE)
+    playerKingdomView = Game(window)
+    playerKingdomView.setup()
+    window.show_view(playerKingdomView)
     arcade.run()
 
 

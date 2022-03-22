@@ -1,5 +1,7 @@
 import arcade
 
+from config import PATH
+
 COLOR_CORRESPONDENCE = {"desert": (241, 184, 26), "grass": (105, 193, 39), "land": (183, 204, 106),
                         "forest": (39, 130, 25), "mountain": (152, 173, 163), "river": (24, 174, 228)}
 
@@ -10,4 +12,4 @@ class Tile(arcade.SpriteSolidColor):
         self.center_x = x
         self.center_y = y
         self.type = type_of_block
-        self.border_tile = arcade.Sprite("../assets/misc/border.png", 1, center_x=x, center_y=y)
+        self.border_tile = arcade.Sprite(f"{PATH}/../../assets/misc/border.png", 1, center_x=x, center_y=y)
