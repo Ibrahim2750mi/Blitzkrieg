@@ -231,7 +231,7 @@ class Kingdom:
         with open(f"{PATH}/../data/{file_name}", "rb") as f:
             enc = f.read()
         decoded_data = json.loads(base64.b64decode(enc))
-
+        print(decoded_data)
         self._food = decoded_data.get("food", 0)
         self._gold = decoded_data.get("gold", 0)
         self._happiness = decoded_data.get("happiness", 0)
@@ -240,38 +240,59 @@ class Kingdom:
         self._soldiers = decoded_data.get("soldiers", 0)
         self._workers = decoded_data.get("workers", 0)
         if decoded_data.get("hospital"):
-            self.build_hospital()
-        if decoded_data.data.get("finance_office"):
-            self.build_finance_office()
-        if decoded_data.get("defence"):
-            self.build_defence_office()
+            self.build_hospital(True)
+        if decoded_data.get("finance_office"):
+            self.build_finance_office(True)
+        if decoded_data.get("defence_office"):
+            self.build_defence_office(True)
 
-    def build_hospital(self) -> bool:
-        if self._gold >= 1200 and self._food >= 200:
+        self.resource_label_list.clear()
+        self.add_labels()
+
+        # fixes a bug where the buttons weren't working
+        self.office = Office(475, 475, "office", self)
+        building_sprite_list = self.world.get_sprite_list(name="buildings")
+        building_sprite_list.pop(0)
+        building_sprite_list.insert(0, self.office)
+        self.world.remove_sprite_list_by_name(name="buildings")
+        self.world.add_sprite_list(name="buildings", sprite_list=building_sprite_list)
+        self.world.move_sprite_list_before(name="buildings", before="border")
+
+    def build_hospital(self, ignore_condition=False) -> bool:
+        if (self._gold >= 1200 and self._food >= 200) or ignore_condition:
             self.hospital = Hospital(425, 425, "hospital", self)
             self.world.add_sprite(name="buildings", sprite=self.hospital)
-            self._gold -= 1200
-            self._food -= 200
+            if not ignore_condition:
+                self._gold -= 1200
+                self._food -= 200
+            self.resource_label_list.clear()
+            self.add_labels()
         else:
             return False
         return True
 
-    def build_finance_office(self) -> bool:
-        if self._gold >= 1200 and self._food >= 200:
+    def build_finance_office(self, ignore_condition=False) -> bool:
+        if (self._gold >= 1200 and self._food >= 200) or ignore_condition:
             self.finance_office = CustomsOffice(425, 325, "finance_office", self)
             self.world.add_sprite(name="buildings", sprite=self.finance_office)
-            self._gold -= 1200
-            self._food -= 200
+            if not ignore_condition:
+                self._gold -= 1200
+                self._food -= 200
+            self.resource_label_list.clear()
+            self.add_labels()
         else:
             return False
         return True
 
-    def build_defence_office(self) -> bool:
-        if self._gold >= 1000 and self._food >= 500:
+    def build_defence_office(self, ignore_condition=False) -> bool:
+        if (self._gold >= 1000 and self._food >= 500) or ignore_condition:
             self.defence_office = DefenceOffice(525, 375, "defence_office", self)
             self.world.add_sprite(name="buildings", sprite=self.defence_office)
-            self._gold -= 1000
-            self._food -= 500
+            if not ignore_condition:
+                self._gold -= 1000
+                self._food -= 500
+            self.resource_label_list.clear()
+            self.add_labels()
         else:
             return False
         return True
@@ -372,6 +393,7 @@ class Kingdom:
             "finance_office": bool(self.finance_office),
             "defence_office": bool(self.defence_office)
         }
+        print(save_data)
         encoded_data = base64.b64encode(json.dumps(save_data).encode("utf-8"))
         with open(f"{PATH}/../data/Turn_{self._turn_number}", "wb") as f:
             f.write(encoded_data)

@@ -34,7 +34,8 @@ class Game(arcade.View):
         self.border_land_tile_list = arcade.SpriteList(use_spatial_hash=True)
         self.bar_list = arcade.SpriteList(use_spatial_hash=True)
 
-        self.player = playerKingdom.Kingdom(self.land_tile_list, self.border_land_tile_list, self.bar_list, self.window, self)
+        self.player = playerKingdom.Kingdom(self.land_tile_list, self.border_land_tile_list, self.bar_list, self.window,
+                                            self)
 
         self.player.setup_terrain()
 
@@ -51,12 +52,24 @@ class Game(arcade.View):
         pass
 
     def on_mouse_press(self, x: float, y: float, button: int, key_modifiers: int) -> None:
+        second_iter = False
+        building_which_triggered = None
         if button == MOUSE_BUTTON_LEFT:
-            office = self.player.office
-            if office.collides_with_point((x, y)):
-                office.triggered = True
+            for building in self.player.world.get_sprite_list(name="buildings"):
+                if building.collides_with_point((x, y)):
+                    building.triggered = True
+                    second_iter = True
+                    building_which_triggered = building
+                    break
+            if second_iter:
+                for building in self.player.world.get_sprite_list(name="buildings"):
+                    if building != building_which_triggered and building.triggered:
+                        building.triggered = False
+                        break
         elif button == MOUSE_BUTTON_RIGHT:
-            self.player.office.triggered = False
+            for building in self.player.world.get_sprite_list(name="buildings"):
+                if building.triggered:
+                    building.triggered = False
 
     def on_draw(self) -> None:
         """Render the screen."""
@@ -65,16 +78,17 @@ class Game(arcade.View):
         # Code to draw the screen goes here
         self.player.draw()
 
-        if self.player.office.triggered:
-            self.player.office.display_info()
+        for building in self.player.world.get_sprite_list(name="buildings"):
+            if building.triggered:
+                building.display_info()
 
 
 def main():
     """Main function"""
     window = arcade.Window(cfg.SCREEN_WIDTH, cfg.SCREEN_HEIGHT, cfg.SCREEN_TITLE)
-    playerKingdomView = Game(window)
-    playerKingdomView.setup()
-    window.show_view(playerKingdomView)
+    player_kingdom_view = Game(window)
+    player_kingdom_view.setup()
+    window.show_view(player_kingdom_view)
     arcade.run()
 
 

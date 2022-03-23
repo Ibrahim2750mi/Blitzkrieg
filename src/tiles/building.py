@@ -19,6 +19,33 @@ class Building(arcade.Sprite):
 
         self.v_box = arcade.gui.UIBoxLayout(space_between=18)
 
+        self.heading_text = arcade.Text(
+            "Info:",
+            start_x=912,
+            start_y=563,
+            font_size=16
+        )
+
+        self.triggered = False
+
+        self.back_button = arcade.gui.UIFlatButton(text="BACK", width=250)
+        self.back_button.on_click = self._on_click_back_button
+
+    def display_info(self):
+        self.heading_text.draw()
+        self.manager.draw()
+
+    def setup_default_menu(self):
+        """Set up the default menu here."""
+
+    def _on_click_back_button(self, _: arcade.gui.UIOnClickEvent):
+        self.heading_text.text = "Info:"
+        self.heading_text.x = 912
+
+        self.manager.clear()
+        self.v_box.clear()
+        self.setup_default_menu()
+
 
 class CustomsOffice(Building):
     def __init__(self, x, y, type_of_build, kingdom):
@@ -38,14 +65,6 @@ class Hospital(Building):
 class Office(Building):
     def __init__(self, x, y, type_of_build, kingdom):
         super(Office, self).__init__(x=x, y=y, type_of_build=type_of_build, kingdom=kingdom)
-        self.triggered = False
-
-        self.heading_text = arcade.Text(
-            "Info:",
-            start_x=912,
-            start_y=563,
-            font_size=16
-        )
 
         self.setup_default_menu()
 
@@ -53,13 +72,6 @@ class Office(Building):
 
         self.error_squiggle_save_manage_population = False
         self.error_squiggle_building_resource = False
-
-        self.back_button = arcade.gui.UIFlatButton(text="BACK", width=250)
-        self.back_button.on_click = self._on_click_back_button
-
-    def display_info(self):
-        self.heading_text.draw()
-        self.manager.draw()
 
     def setup_default_menu(self):
         manage_building_button = arcade.gui.UIFlatButton(text="Manage Buildings", width=250)
@@ -136,12 +148,14 @@ class Office(Building):
 
             self.v_box.add(self.h_box_defence_office)
 
+        self.v_box.add(self.back_button)
+
         self.manager.add(
             arcade.gui.UIAnchorWidget(
                 anchor_x="left",
                 anchor_y="bottom",
                 align_x=810,
-                align_y=300,
+                align_y=220,
                 child=self.v_box
             )
         )
@@ -290,16 +304,11 @@ class Office(Building):
             )
         )
 
-    def _on_click_back_button(self, _: arcade.gui.UIOnClickEvent):
-        self.manager.clear()
-        self.v_box.clear()
-        self.setup_default_menu()
-
     def _on_click_save_button_manage_population(self, _: arcade.gui.UIOnClickEvent):
         if sum([i.text for i in self.manage_population_widget_list[-3:]]) <= self.kingdom.population:
-            self.kingdom.farmers = self.manage_population_widget_list[0].text
-            self.kingdom.workers = self.manage_population_widget_list[1].text
-            self.kingdom.soldiers = self.manage_population_widget_list[2].text
+            self.kingdom.farmers = self.manage_population_widget_list[-3].text
+            self.kingdom.workers = self.manage_population_widget_list[-2].text
+            self.kingdom.soldiers = self.manage_population_widget_list[-1].text
             self.error_squiggle_save_manage_population = False
         elif not self.error_squiggle_save_manage_population:
             self.manager.clear()
