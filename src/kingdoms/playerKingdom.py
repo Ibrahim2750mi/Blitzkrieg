@@ -227,6 +227,55 @@ class Kingdom:
             font_size=12
         ))
 
+    def switched_view(self, file_name):
+        with open(f"{PATH}/../data/{file_name}", "rb") as f:
+            enc = f.read()
+        decoded_data = json.loads(base64.b64decode(enc))
+
+        self._food = decoded_data.get("food", 0)
+        self._gold = decoded_data.get("gold", 0)
+        self._happiness = decoded_data.get("happiness", 0)
+        self._population = decoded_data.get("population", 0)
+        self._farmers = decoded_data.get("farmers", 0)
+        self._soldiers = decoded_data.get("soldiers", 0)
+        self._workers = decoded_data.get("workers", 0)
+        if decoded_data.get("hospital"):
+            self.build_hospital()
+        if decoded_data.data.get("finance_office"):
+            self.build_finance_office()
+        if decoded_data.get("defence"):
+            self.build_defence_office()
+
+    def build_hospital(self) -> bool:
+        if self._gold >= 1200 and self._food >= 200:
+            self.hospital = Hospital(425, 425, "hospital", self)
+            self.world.add_sprite(name="buildings", sprite=self.hospital)
+            self._gold -= 1200
+            self._food -= 200
+        else:
+            return False
+        return True
+
+    def build_finance_office(self) -> bool:
+        if self._gold >= 1200 and self._food >= 200:
+            self.finance_office = CustomsOffice(425, 325, "finance_office", self)
+            self.world.add_sprite(name="buildings", sprite=self.finance_office)
+            self._gold -= 1200
+            self._food -= 200
+        else:
+            return False
+        return True
+
+    def build_defence_office(self) -> bool:
+        if self._gold >= 1000 and self._food >= 500:
+            self.defence_office = DefenceOffice(525, 375, "defence_office", self)
+            self.world.add_sprite(name="buildings", sprite=self.defence_office)
+            self._gold -= 1000
+            self._food -= 500
+        else:
+            return False
+        return True
+
     def setup_menu(self):
         menu_button = arcade.gui.UIFlatButton(text="⚙", width=25, font_size=12, style={"bg_color": (0, 0, 0),
                                                                                        "font_color": (
@@ -252,8 +301,19 @@ class Kingdom:
 
     def _on_click_next_turn_button(self, _: arcade.gui.UIOnClickEvent):
         self._turn_number += 1
-        self._food += 3 * self._farmers - self._workers - 2 * self._soldiers
-        self._gold += - self._farmers + 3 * self._workers - 2 * self._soldiers
+
+        extra_gold_deduction = 0
+        extra_food_deduction = 0
+        if self.finance_office:
+            extra_food_deduction += 20
+        if self.hospital:
+            extra_gold_deduction += 20
+        if self.defence_office:
+            extra_gold_deduction += 20
+            extra_food_deduction += 20
+
+        self._food += 3 * self._farmers - self._workers - 2 * self._soldiers - extra_food_deduction
+        self._gold += - self._farmers + 3 * self._workers - 2 * self._soldiers - extra_gold_deduction
 
         if self._happiness <= 100:
             if self.unhappiness > 0:
@@ -262,6 +322,8 @@ class Kingdom:
                 self._happiness += 3
         if self._happiness > 100:
             self._happiness = 100
+        if self._happiness > 80:
+            self._population += (3 * self._farmers - self._workers - 2 * self._soldiers) // 10
 
         self.resource_label_list.clear()
         self.add_labels()
@@ -322,37 +384,6 @@ class Kingdom:
         file_dialog = AdvancedUiFileDialogOpen(self.main_window, self.main_view)
         file_dialog.setup()
         self.main_window.show_view(file_dialog)
-
-    def switched_view(self, file_name):
-        with open(f"{PATH}/../data/{file_name}", "rb") as f:
-            enc = f.read()
-        decoded_data = json.loads(base64.b64decode(enc))
-
-        self._food = decoded_data.get("food", 0)
-        self._gold = decoded_data.get("gold", 0)
-        self._happiness = decoded_data.get("happiness", 0)
-        self._population = decoded_data.get("population", 0)
-        self._farmers = decoded_data.get("farmers", 0)
-        self._soldiers = decoded_data.get("soldiers", 0)
-        self._workers = decoded_data.get("workers", 0)
-        if decoded_data.get("hospital"):
-            self.build_hospital()
-        if decoded_data.data.get("finance_office"):
-            self.build_finance_office()
-        if decoded_data.get("defence"):
-            self.build_defence_office()
-
-    def build_hospital(self):
-        self.hospital = Hospital(425, 425, "hospital", self)
-        self.world.add_sprite(name="buildings", sprite=self.hospital)
-
-    def build_finance_office(self):
-        self.finance_office = CustomsOffice(425, 325, "finance_office", self)
-        self.world.add_sprite(name="buildings", sprite=self.finance_office)
-
-    def build_defence_office(self):
-        self.defence_office = DefenceOffice(525, 375, "defence_office", self)
-        self.world.add_sprite(name="buildings", sprite=self.defence_office)
 
     @property
     def farmers(self):
