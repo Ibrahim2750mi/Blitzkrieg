@@ -6,7 +6,7 @@ import arcade.gui
 
 from config import PATH
 from misc.misc_classes import AdvancedUiFileDialogOpen, AdvancedUiManager, LabelList
-from tiles.building import Office
+from tiles.building import CustomsOffice, DefenceOffice, Hospital, Office
 from tiles.tile import Tile
 
 MAIN_PATH = f"{PATH}/../assets/resource/"
@@ -31,9 +31,14 @@ class Kingdom:
         self.world = arcade.Scene()
         self.world.add_sprite_list(name="tiles", use_spatial_hash=True, sprite_list=tile_list)
         self.world.add_sprite_list(name="toolbars", use_spatial_hash=True, sprite_list=bar_list)
+        self.world.add_sprite_list(name="buildings", use_spatial_hash=True, sprite_list=arcade.SpriteList())
 
         self.office = Office(475, 475, "office", self)
-        self.world.add_sprite(name="office", sprite=self.office)
+        self.world.add_sprite(name="buildings", sprite=self.office)
+
+        self.hospital = None
+        self.finance_office = None
+        self.defence_office = None
 
         self.world.add_sprite(sprite=arcade.Sprite(f"{MAIN_PATH}food.png", 1, center_x=80, center_y=635), name="food")
         self.world.add_sprite(sprite=arcade.Sprite(f"{MAIN_PATH}gold.png", 1, center_x=230, center_y=635), name="gold")
@@ -301,6 +306,9 @@ class Kingdom:
             "farmers": self._farmers,
             "soldiers": self._soldiers,
             "workers": self._workers,
+            "hospital": bool(self.hospital),
+            "finance_office": bool(self.finance_office),
+            "defence_office": bool(self.defence_office)
         }
         encoded_data = base64.b64encode(json.dumps(save_data).encode("utf-8"))
         with open(f"{PATH}/../data/Turn_{self._turn_number}", "wb") as f:
@@ -327,6 +335,24 @@ class Kingdom:
         self._farmers = decoded_data.get("farmers", 0)
         self._soldiers = decoded_data.get("soldiers", 0)
         self._workers = decoded_data.get("workers", 0)
+        if decoded_data.get("hospital"):
+            self.build_hospital()
+        if decoded_data.data.get("finance_office"):
+            self.build_finance_office()
+        if decoded_data.get("defence"):
+            self.build_defence_office()
+
+    def build_hospital(self):
+        self.hospital = Hospital(425, 425, "hospital", self)
+        self.world.add_sprite(name="buildings", sprite=self.hospital)
+
+    def build_finance_office(self):
+        self.finance_office = CustomsOffice(425, 325, "finance_office", self)
+        self.world.add_sprite(name="buildings", sprite=self.finance_office)
+
+    def build_defence_office(self):
+        self.defence_office = DefenceOffice(525, 375, "defence_office", self)
+        self.world.add_sprite(name="buildings", sprite=self.defence_office)
 
     @property
     def farmers(self):

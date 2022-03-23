@@ -18,6 +18,21 @@ class Building(arcade.Sprite):
         self.v_box = arcade.gui.UIBoxLayout(space_between=18)
 
 
+class CustomsOffice(Building):
+    def __init__(self, x, y, type_of_build, kingdom):
+        super(CustomsOffice, self).__init__(x=x, y=y, type_of_build=type_of_build, kingdom=kingdom)
+
+
+class DefenceOffice(Building):
+    def __init__(self, x, y, type_of_build, kingdom):
+        super(DefenceOffice, self).__init__(x=x, y=y, type_of_build=type_of_build, kingdom=kingdom)
+
+
+class Hospital(Building):
+    def __init__(self, x, y, type_of_build, kingdom):
+        super(Hospital, self).__init__(x=x, y=y, type_of_build=type_of_build, kingdom=kingdom)
+
+
 class Office(Building):
     def __init__(self, x, y, type_of_build, kingdom):
         super(Office, self).__init__(x=x, y=y, type_of_build=type_of_build, kingdom=kingdom)
@@ -42,12 +57,141 @@ class Office(Building):
         self.heading_text.draw()
         self.manager.draw()
 
-    def _on_click_manage_building(self, _: arcade.gui.UIOnClickEvent):
+    def _on_click_manage_building(self, _: arcade.gui.UIOnClickEvent = None):
         self.heading_text.text = "Manage Buildings:"
         self.heading_text.x = 840
 
         self.manager.clear()
         self.v_box.clear()
+
+        build_label = arcade.gui.UILabel(text="Build:", font_size=16, text_color=(0, 0, 0))
+
+        self.h_box_hospital = arcade.gui.UIBoxLayout(space_between=10, vertical=False)
+        hospital = arcade.gui.UIFlatButton(text="Hospital", font_size=8, width=200)
+        hospital.on_click = self._on_click_hospital_button
+        hospital_info_button = arcade.gui.UIFlatButton(text="?", width=20)
+        hospital_info_button.on_click = self._on_click_hospital_info_button
+
+        self.h_box_hospital.add(hospital)
+        self.h_box_hospital.add(hospital_info_button)
+
+        self.h_box_finance_office = arcade.gui.UIBoxLayout(space_between=10, vertical=False)
+        finance_office = arcade.gui.UIFlatButton(text="Finance Office", font_size=8, width=200)
+        finance_office.on_click = self._on_click_finance_office_button
+        finance_office_info_button = arcade.gui.UIFlatButton(text="?", width=20)
+        finance_office_info_button.on_click = self._on_click_finance_office_info_button
+
+        self.h_box_finance_office.add(finance_office)
+        self.h_box_finance_office.add(finance_office_info_button)
+
+        self.h_box_defence_office = arcade.gui.UIBoxLayout(space_between=10, vertical=False)
+        defence_office = arcade.gui.UIFlatButton(text="Defence Office", font_size=8, width=200)
+        defence_office.on_click = self._on_click_defence_office_button
+        defence_office_info_button = arcade.gui.UIFlatButton(text="?", width=20)
+        defence_office_info_button.on_click = self._on_click_defence_office_info_button
+
+        self.h_box_defence_office.add(defence_office)
+        self.h_box_defence_office.add(defence_office_info_button)
+
+        self.v_box.add(build_label)
+        self.v_box.add(self.h_box_hospital)
+        self.v_box.add(self.h_box_finance_office)
+        self.v_box.add(self.h_box_defence_office)
+
+        self.manager.add(
+            arcade.gui.UIAnchorWidget(
+                anchor_x="left",
+                anchor_y="bottom",
+                align_x=810,
+                align_y=300,
+                child=self.v_box
+            )
+        )
+
+    def _on_click_hospital_info_button(self, _: arcade.gui.UIOnClickEvent):
+        self.manager.clear()
+        self.v_box.clear()
+        message_box = arcade.gui.UIMessageBox(
+            width=350,
+            height=200,
+            message_text=(
+                "Used to admit injured soldiers to save them.\nCapacity: 200\nResource consumption per turn: 20g\n"
+                "Initial build cost: 1200g, 200f"
+            ),
+            callback=self._on_click_manage_building,
+            buttons=["ok"]
+        )
+
+        self.v_box.add(message_box)
+
+        self.manager.add(
+            arcade.gui.UIAnchorWidget(
+                anchor_x="center",
+                anchor_y="center",
+                child=self.v_box
+            )
+        )
+
+    def _on_click_hospital_button(self, _: arcade.gui.UIOnClickEvent):
+        self.kingdom.build_hospital()
+        self._on_click_manage_building()
+
+    def _on_click_finance_office_info_button(self, _: arcade.gui.UIOnClickEvent):
+        self.manager.clear()
+        self.v_box.clear()
+
+        message_box = arcade.gui.UIMessageBox(
+            width=350,
+            height=200,
+            message_text=(
+                "Used to manage finances.\nResource consumption per turn: 20f\nInitial build cost: 1200g, 200f"
+            ),
+            callback=self._on_click_manage_building,
+            buttons=["ok"]
+        )
+
+        self.v_box.add(message_box)
+
+        self.manager.add(
+            arcade.gui.UIAnchorWidget(
+                anchor_x="center",
+                anchor_y="center",
+                child=self.v_box
+            )
+        )
+
+    def _on_click_finance_office_button(self, _: arcade.gui.UIOnClickEvent):
+        self.kingdom.build_finance_office()
+        self._on_click_manage_building()
+
+    def _on_click_defence_office_info_button(self, _: arcade.gui.UIOnClickEvent):
+        self.manager.clear()
+        self.v_box.clear()
+
+        message_box = arcade.gui.UIMessageBox(
+            width=350,
+            height=200,
+            message_text=(
+                "Used to manage army(important).\nResource consumption per turn: 20f 20g"
+                "\nInitial build cost: 1000g, 500f"
+            ),
+            callback=self._on_click_manage_building,
+            buttons=["ok"]
+        )
+
+        self.v_box.add(message_box)
+
+        self.manager.add(
+            arcade.gui.UIAnchorWidget(
+                anchor_x="center",
+                anchor_y="center",
+                child=self.v_box
+            )
+        )
+
+    def _on_click_defence_office_button(self, _: arcade.gui.UIOnClickEvent):
+        self.kingdom.build_defence_office()
+        self._on_click_manage_building()
 
     def _on_click_manage_population(self, _: arcade.gui.UIOnClickEvent):
         self.heading_text.text = "Manage Population:"
