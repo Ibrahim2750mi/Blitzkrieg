@@ -56,6 +56,164 @@ class DefenceOffice(Building):
     def __init__(self, x, y, type_of_build, kingdom):
         super(DefenceOffice, self).__init__(x=x, y=y, type_of_build=type_of_build, kingdom=kingdom)
 
+        self.setup_default_menu()
+
+        self.manage_army_input_box_list = []
+
+        self.error_squiggle_manage_army = False
+
+        self.v_box = arcade.gui.UIBoxLayout(space_between=8)
+
+    def setup_default_menu(self):
+        manage_army_button = arcade.gui.UIFlatButton(text="Manage Army", width=250)
+        manage_army_button.on_click = self._on_click_manage_army
+
+        army_info_button = arcade.gui.UIFlatButton(text="Army Info", width=250)
+        army_info_button.on_click = self._on_click_army_info_button
+
+        self.v_box.add(manage_army_button)
+        self.v_box.add(army_info_button)
+
+        self.manager.add(
+            arcade.gui.UIAnchorWidget(
+                anchor_x="left",
+                anchor_y="bottom",
+                align_x=810,
+                align_y=350,
+                child=self.v_box)
+        )
+
+    def _on_click_manage_army(self, _: arcade.gui.UIOnClickEvent):
+        self.heading_text.text = "Manage Army:"
+        self.heading_text.x = 850
+
+        self.manager.clear()
+        self.v_box.clear()
+
+        swords_man_label = arcade.gui.UILabel(text="Assign swords man unit(-5p):", font_size=11, width=250,
+                                              text_color=(0, 0, 0))
+        swords_man_input_box = AdvanceUiInputText(text=str(self.kingdom.army.swords_man), width=250, height=20,
+                                                  font_size=12, only_numeric_values=True)
+        swords_man_input_box_border = arcade.gui.UIBorder(swords_man_input_box)
+
+        self.v_box.add(swords_man_label)
+        self.v_box.add(swords_man_input_box_border)
+        self.manage_army_input_box_list.append(swords_man_input_box)
+
+        bow_man_label = arcade.gui.UILabel(text="Assign bow man unit(-5p):", font_size=11, width=250,
+                                           text_color=(0, 0, 0))
+        bow_man_input_box = AdvanceUiInputText(text=str(self.kingdom.army.bow_man), width=250, height=20,
+                                               font_size=12, only_numeric_values=True)
+        bow_man_input_box_border = arcade.gui.UIBorder(bow_man_input_box)
+
+        self.v_box.add(bow_man_label)
+        self.v_box.add(bow_man_input_box_border)
+        self.manage_army_input_box_list.append(bow_man_input_box)
+
+        cavalry_label = arcade.gui.UILabel(text="Assign cavalry unit(-5p):", font_size=11, width=250,
+                                           text_color=(0, 0, 0))
+        cavalry_input_box = AdvanceUiInputText(text=str(self.kingdom.army.cavalry), width=250, height=20,
+                                               font_size=12, only_numeric_values=True)
+        cavalry_input_box_border = arcade.gui.UIBorder(cavalry_input_box)
+
+        self.v_box.add(cavalry_label)
+        self.v_box.add(cavalry_input_box_border)
+        self.manage_army_input_box_list.append(cavalry_input_box)
+
+        pike_man_label = arcade.gui.UILabel(text="Assign pike man unit(-5p):", font_size=11, width=250,
+                                            text_color=(0, 0, 0))
+        pike_man_input_box = AdvanceUiInputText(text=str(self.kingdom.army.pike_man), width=250, height=20,
+                                                font_size=12, only_numeric_values=True)
+        pike_man_input_box_border = arcade.gui.UIBorder(pike_man_input_box)
+
+        self.v_box.add(pike_man_label)
+        self.v_box.add(pike_man_input_box_border)
+        self.manage_army_input_box_list.append(pike_man_input_box)
+
+        canons_label = arcade.gui.UILabel(text="Assign canons(-1p):", font_size=11, width=250,
+                                          text_color=(0, 0, 0))
+        canons_input_box = AdvanceUiInputText(text=str(self.kingdom.army.canons), width=250, height=20,
+                                              font_size=12, only_numeric_values=True)
+        canons_input_box_border = arcade.gui.UIBorder(canons_input_box)
+
+        self.v_box.add(canons_label)
+        self.v_box.add(canons_input_box_border)
+        self.manage_army_input_box_list.append(canons_input_box)
+
+        save_button = arcade.gui.UIFlatButton(text="SAVE", width=250)
+        save_button.on_click = self._on_click_save_button_manage_army
+
+        self.v_box.add(save_button)
+        self.v_box.add(self.back_button)
+
+        self.manager.add(
+            arcade.gui.UIAnchorWidget(
+                anchor_x="left",
+                anchor_y="bottom",
+                align_x=810,
+                align_y=150,
+                child=self.v_box)
+        )
+
+    def _on_click_army_info_button(self, _: arcade.gui.UIOnClickEvent):
+        self.heading_text.text = "Army Info:"
+        self.heading_text.x = 875
+
+        self.manager.clear()
+        self.v_box.clear()
+
+        army_info_label = arcade.gui.UITextArea(text=f"Army morale: {self.kingdom.army.morale}\n"
+                                                     f"Battles fought: {self.kingdom.army.battles}\n"
+                                                     f"Battles won: {self.kingdom.army.battles_won}\n"
+                                                     f"Battle boost: {self.kingdom.army.boost}\n"
+                                                     f"\nMilitary Personnel(s):\n\n"
+                                                     f"Swords man: {self.kingdom.army.swords_man}\n"
+                                                     f"Bow man: {self.kingdom.army.bow_man}\n"
+                                                     f"Cavalry: {self.kingdom.army.cavalry}\n"
+                                                     f"Pike man: {self.kingdom.army.pike_man}\n"
+                                                     f"Canons: {self.kingdom.army.canons}",
+                                                multiline=True, width=250, font_size=12, text_color=(0, 0, 0),
+                                                height=250)
+
+        self.v_box.add(army_info_label)
+        self.v_box.add(self.back_button)
+        self.manager.add(
+            arcade.gui.UIAnchorWidget(
+                anchor_x="left",
+                anchor_y="bottom",
+                align_x=810,
+                align_y=175,
+                child=self.v_box)
+        )
+
+    def _on_click_save_button_manage_army(self, _: arcade.gui.UIOnClickEvent):
+        if 5 * sum([i.text for i in self.manage_army_input_box_list[-5: -1]]) + \
+                self.manage_army_input_box_list[-1].text <= self.kingdom.soldiers:
+            self.kingdom.army.swords_man = self.manage_army_input_box_list[-5]
+            self.kingdom.army.bow_man = self.manage_army_input_box_list[-4]
+            self.kingdom.army.cavalry = self.manage_army_input_box_list[-3]
+            self.kingdom.army.pike_man = self.manage_army_input_box_list[-2]
+            self.kingdom.army.canons = self.manage_army_input_box_list[-1]
+            self.error_squiggle_manage_army = False
+        elif not self.error_squiggle_manage_army:
+            self.manager.clear()
+
+            error_label = arcade.gui.UITextArea(width=250, text="Your assigned soldiers is greater than your"
+                                                                " current soldiers\nNOTE: 1 unit equals 5p".upper(),
+                                                multiline=True, text_color=(255, 0, 0), font_size=8, height=60)
+            self.error_squiggle_save_manage_population = True
+            self.v_box.add(error_label)
+
+            self.manager.add(
+                arcade.gui.UIAnchorWidget(
+                    anchor_x="left",
+                    anchor_y="bottom",
+                    align_x=810,
+                    align_y=100,
+                    child=self.v_box
+                )
+            )
+
 
 class Hospital(Building):
     def __init__(self, x, y, type_of_build, kingdom):
@@ -187,7 +345,7 @@ class Office(Building):
     def _on_click_hospital_button(self, _: arcade.gui.UIOnClickEvent):
         ret = self.kingdom.build_hospital()
         self._on_click_manage_building()
-        if not ret and self.error_squiggle_building_resource:
+        if not ret and not self.error_squiggle_building_resource:
             self._raise_manage_building_resource_error()
             self.error_squiggle_building_resource = True
         else:
@@ -196,7 +354,7 @@ class Office(Building):
     def _on_click_finance_office_button(self, _: arcade.gui.UIOnClickEvent):
         ret = self.kingdom.build_finance_office()
         self._on_click_manage_building()
-        if not ret and self.error_squiggle_building_resource:
+        if not ret and not self.error_squiggle_building_resource:
             self._raise_manage_building_resource_error()
             self.error_squiggle_building_resource = True
         else:
@@ -205,7 +363,7 @@ class Office(Building):
     def _on_click_defence_office_button(self, _: arcade.gui.UIOnClickEvent):
         ret = self.kingdom.build_defence_office()
         self._on_click_manage_building()
-        if not ret and self.error_squiggle_building_resource:
+        if not ret and not self.error_squiggle_building_resource:
             self._raise_manage_building_resource_error()
             self.error_squiggle_building_resource = True
         else:
@@ -309,6 +467,7 @@ class Office(Building):
             self.kingdom.farmers = self.manage_population_widget_list[-3].text
             self.kingdom.workers = self.manage_population_widget_list[-2].text
             self.kingdom.soldiers = self.manage_population_widget_list[-1].text
+            self.kingdom.army.swords_man = self.kingdom.soldiers // 5
             self.error_squiggle_save_manage_population = False
         elif not self.error_squiggle_save_manage_population:
             self.manager.clear()

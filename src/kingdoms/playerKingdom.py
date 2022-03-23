@@ -4,6 +4,7 @@ import json
 import arcade
 import arcade.gui
 
+from army.army import Army
 from config import PATH
 from misc.misc_classes import AdvancedUiFileDialogOpen, AdvancedUiManager, LabelList
 from tiles.building import CustomsOffice, DefenceOffice, Hospital, Office
@@ -60,6 +61,8 @@ class Kingdom:
 
         self.main_window = main_window
         self.main_view = main_view
+
+        self.army = Army(self)
 
     def draw(self):
         self.world.draw()
@@ -231,7 +234,6 @@ class Kingdom:
         with open(f"{PATH}/../data/{file_name}", "rb") as f:
             enc = f.read()
         decoded_data = json.loads(base64.b64decode(enc))
-        print(decoded_data)
         self._food = decoded_data.get("food", 0)
         self._gold = decoded_data.get("gold", 0)
         self._happiness = decoded_data.get("happiness", 0)
@@ -239,6 +241,19 @@ class Kingdom:
         self._farmers = decoded_data.get("farmers", 0)
         self._soldiers = decoded_data.get("soldiers", 0)
         self._workers = decoded_data.get("workers", 0)
+
+        # fixes a bug where the buttons weren't working
+
+        building_sprite_list = self.world.get_sprite_list(name="buildings")
+        building_sprite_list.clear()
+
+        self.office = Office(475, 475, "office", self)
+        building_sprite_list.append(self.office)
+
+        self.world.remove_sprite_list_by_name(name="buildings")
+        self.world.add_sprite_list(name="buildings", sprite_list=building_sprite_list)
+        self.world.move_sprite_list_before(name="buildings", before="border")
+
         if decoded_data.get("hospital"):
             self.build_hospital(True)
         if decoded_data.get("finance_office"):
@@ -248,15 +263,6 @@ class Kingdom:
 
         self.resource_label_list.clear()
         self.add_labels()
-
-        # fixes a bug where the buttons weren't working
-        self.office = Office(475, 475, "office", self)
-        building_sprite_list = self.world.get_sprite_list(name="buildings")
-        building_sprite_list.pop(0)
-        building_sprite_list.insert(0, self.office)
-        self.world.remove_sprite_list_by_name(name="buildings")
-        self.world.add_sprite_list(name="buildings", sprite_list=building_sprite_list)
-        self.world.move_sprite_list_before(name="buildings", before="border")
 
     def build_hospital(self, ignore_condition=False) -> bool:
         if (self._gold >= 1200 and self._food >= 200) or ignore_condition:
@@ -281,6 +287,7 @@ class Kingdom:
             self.resource_label_list.clear()
             self.add_labels()
         else:
+            print("called")
             return False
         return True
 
