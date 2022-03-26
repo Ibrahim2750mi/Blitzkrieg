@@ -19,12 +19,12 @@ class Unit(arcade.Sprite):
         self.defence_percent = None
 
         self.index = index
-        self._name = NAME.get(self.index + 1, "None")
+        self.name = NAME.get(self.index + 1, "None")
 
         self.played = False
 
     def __str__(self):
-        return f"\t{self._name}{['(enemy)' if self.enemy else ''][0]}:\n\nAlive: {self.alive}\nInjured: " \
+        return f"\t{self.name}{['(enemy)' if self.enemy else ''][0]}:\n\nAlive: {self.alive}\nInjured: " \
                f"{self.injured}\nDead: {self.dead}\nHealth: {self.health}"
 
     def deduct_health(self, value):

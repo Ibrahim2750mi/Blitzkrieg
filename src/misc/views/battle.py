@@ -46,7 +46,8 @@ class Battle(arcade.View):
 
         self.mouse_point = None
 
-        self.loaded_textures = []
+        self.loaded_textures = None
+        self.loaded_sounds = None
 
         self.occupied_places = None
 
@@ -68,7 +69,10 @@ class Battle(arcade.View):
         self.enemy_unit_list = arcade.SpriteList()
 
         self.loaded_textures = []
+        self.loaded_sounds = []
+
         self.load_textures()
+        self.load_sounds()
 
         self.tool_bar = arcade.Sprite(f"{SUB_MAIN_PATH}info_box_h.png", center_x=940, center_y=400)
         self.assign_bar = arcade.Sprite(f"{SUB_MAIN_PATH}dialog_box.png", center_x=540, center_y=50)
@@ -214,6 +218,11 @@ class Battle(arcade.View):
         for name in name_list:
             self.loaded_textures.append(arcade.load_texture(f"{MAIN_PATH}enemy/{name}"))
 
+    def load_sounds(self):
+        sound_list = ["metalhit.mp3", "arrow.mp3", "horse.mp3", "metalhit.mp3", "cannon.mp3"]
+        for name in sound_list:
+            self.loaded_sounds.append(arcade.Sound(f"{PATH}/../assets/sound_effects/{name}"))
+
     def _on_click_move_button(self, _: arcade.gui.UIOnClickEvent):
         if self.selected_friendly_unit.played:
             text = arcade.gui.UITextArea(text="Already played with this unit", text_color=(255, 0, 0),
@@ -237,6 +246,7 @@ class Battle(arcade.View):
                 self.v_box.add(text)
             return False
         self.selected_enemy_unit.deduct_health(self.selected_friendly_unit.attack)
+        self.loaded_sounds[self.selected_friendly_unit.index].play()
         self.selected_friendly_unit.played = True
         self.unit_info.text = str(self.selected_enemy_unit)
 
