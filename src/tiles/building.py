@@ -17,7 +17,7 @@ class Building(arcade.Sprite):
         self.manager = AdvancedUiManager()
         self.manager.enable()
 
-        self.v_box = arcade.gui.UIBoxLayout(space_between=18)
+        self.v_box = arcade.gui.UIBoxLayout(space_between=15)
 
         self.heading_text = arcade.Text(
             "Info:",
@@ -90,7 +90,7 @@ class DefenceOffice(Building):
         self.manager.clear()
         self.v_box.clear()
 
-        swords_man_label = arcade.gui.UILabel(text="Assign swords man unit(-5p):", font_size=11, width=250,
+        swords_man_label = arcade.gui.UILabel(text="Assign swords man unit(-10p):", font_size=11, width=250,
                                               text_color=(0, 0, 0))
         swords_man_input_box = AdvanceUiInputText(text=str(self.kingdom.army.swords_man), width=250, height=20,
                                                   font_size=12, only_numeric_values=True)
@@ -100,7 +100,7 @@ class DefenceOffice(Building):
         self.v_box.add(swords_man_input_box_border)
         self.manage_army_input_box_list.append(swords_man_input_box)
 
-        bow_man_label = arcade.gui.UILabel(text="Assign bow man unit(-5p):", font_size=11, width=250,
+        bow_man_label = arcade.gui.UILabel(text="Assign bow man unit(-10p):", font_size=11, width=250,
                                            text_color=(0, 0, 0))
         bow_man_input_box = AdvanceUiInputText(text=str(self.kingdom.army.bow_man), width=250, height=20,
                                                font_size=12, only_numeric_values=True)
@@ -110,7 +110,7 @@ class DefenceOffice(Building):
         self.v_box.add(bow_man_input_box_border)
         self.manage_army_input_box_list.append(bow_man_input_box)
 
-        cavalry_label = arcade.gui.UILabel(text="Assign cavalry unit(-5p):", font_size=11, width=250,
+        cavalry_label = arcade.gui.UILabel(text="Assign cavalry unit(-10p):", font_size=11, width=250,
                                            text_color=(0, 0, 0))
         cavalry_input_box = AdvanceUiInputText(text=str(self.kingdom.army.cavalry), width=250, height=20,
                                                font_size=12, only_numeric_values=True)
@@ -120,7 +120,7 @@ class DefenceOffice(Building):
         self.v_box.add(cavalry_input_box_border)
         self.manage_army_input_box_list.append(cavalry_input_box)
 
-        pike_man_label = arcade.gui.UILabel(text="Assign pike man unit(-5p):", font_size=11, width=250,
+        pike_man_label = arcade.gui.UILabel(text="Assign pike man unit(-10p):", font_size=11, width=250,
                                             text_color=(0, 0, 0))
         pike_man_input_box = AdvanceUiInputText(text=str(self.kingdom.army.pike_man), width=250, height=20,
                                                 font_size=12, only_numeric_values=True)
@@ -130,7 +130,7 @@ class DefenceOffice(Building):
         self.v_box.add(pike_man_input_box_border)
         self.manage_army_input_box_list.append(pike_man_input_box)
 
-        canons_label = arcade.gui.UILabel(text="Assign canons(-1p):", font_size=11, width=250,
+        canons_label = arcade.gui.UILabel(text="Assign canons(-10p):", font_size=11, width=250,
                                           text_color=(0, 0, 0))
         canons_input_box = AdvanceUiInputText(text=str(self.kingdom.army.canons), width=250, height=20,
                                               font_size=12, only_numeric_values=True)
@@ -187,13 +187,13 @@ class DefenceOffice(Building):
         )
 
     def _on_click_save_button_manage_army(self, _: arcade.gui.UIOnClickEvent):
-        if 5 * sum([i.text for i in self.manage_army_input_box_list[-5: -1]]) + \
-                self.manage_army_input_box_list[-1].text <= self.kingdom.soldiers:
-            self.kingdom.army.swords_man = self.manage_army_input_box_list[-5]
-            self.kingdom.army.bow_man = self.manage_army_input_box_list[-4]
-            self.kingdom.army.cavalry = self.manage_army_input_box_list[-3]
-            self.kingdom.army.pike_man = self.manage_army_input_box_list[-2]
-            self.kingdom.army.canons = self.manage_army_input_box_list[-1]
+        print(self.kingdom.soldiers)
+        if 10 * sum([i.text for i in self.manage_army_input_box_list[-5:]]) <= self.kingdom.soldiers:
+            self.kingdom.army.swords_man = self.manage_army_input_box_list[-5].text
+            self.kingdom.army.bow_man = self.manage_army_input_box_list[-4].text
+            self.kingdom.army.cavalry = self.manage_army_input_box_list[-3].text
+            self.kingdom.army.pike_man = self.manage_army_input_box_list[-2].text
+            self.kingdom.army.canons = self.manage_army_input_box_list[-1].text
             self.error_squiggle_manage_army = False
         elif not self.error_squiggle_manage_army:
             self.manager.clear()
@@ -467,7 +467,7 @@ class Office(Building):
             self.kingdom.farmers = self.manage_population_widget_list[-3].text
             self.kingdom.workers = self.manage_population_widget_list[-2].text
             self.kingdom.soldiers = self.manage_population_widget_list[-1].text
-            self.kingdom.army.swords_man = self.kingdom.soldiers // 5
+            self.kingdom.army.swords_man = self.kingdom.soldiers // 10
             self.error_squiggle_save_manage_population = False
         elif not self.error_squiggle_save_manage_population:
             self.manager.clear()

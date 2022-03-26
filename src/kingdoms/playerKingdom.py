@@ -6,6 +6,7 @@ import arcade.gui
 
 from army.army import Army
 from config import PATH
+from misc import views
 from misc.misc_classes import AdvancedUiFileDialogOpen, AdvancedUiManager, LabelList
 from tiles.building import CustomsOffice, DefenceOffice, Hospital, Office
 from tiles.tile import Tile
@@ -63,6 +64,8 @@ class Kingdom:
         self.main_view = main_view
 
         self.army = Army(self)
+        self.map = views.Map(self.main_window, self.main_view)
+        self.battle = views.Battle(self.main_window, self.main_view)
 
     def draw(self):
         self.world.draw()
@@ -201,6 +204,10 @@ class Kingdom:
             arcade.Sprite(f"{PATH}/../assets/misc/dialog_box.png", 1, center_x=540,
                           center_y=650))
 
+        map_button = arcade.gui.UIFlatButton(text="Map", width=100, height=25, x=980, y=25)
+        map_button.on_click = self._on_click_map_button
+        self.manager.add(map_button)
+
     def add_labels(self):
         self.resource_label_list.append(arcade.Text(
             f"Food(f): {self._food}",
@@ -234,6 +241,9 @@ class Kingdom:
         with open(f"{PATH}/../data/{file_name}", "rb") as f:
             enc = f.read()
         decoded_data = json.loads(base64.b64decode(enc))
+
+        self._turn_number = decoded_data.get("turn_number", 1)
+
         self._food = decoded_data.get("food", 0)
         self._gold = decoded_data.get("gold", 0)
         self._happiness = decoded_data.get("happiness", 0)
@@ -242,6 +252,11 @@ class Kingdom:
         self._soldiers = decoded_data.get("soldiers", 0)
         self._workers = decoded_data.get("workers", 0)
 
+        self.army.swords_man = decoded_data.get("swords_man", 0)
+        self.army.bow_man = decoded_data.get("bow_man", 0)
+        self.army.cavalry = decoded_data.get("cavalry", 0)
+        self.army.pike_man = decoded_data.get("pike_man", 0)
+        self.army.canons = decoded_data.get("canons", 0)
         # fixes a bug where the buttons weren't working
 
         building_sprite_list = self.world.get_sprite_list(name="buildings")
@@ -260,6 +275,8 @@ class Kingdom:
             self.build_finance_office(True)
         if decoded_data.get("defence_office"):
             self.build_defence_office(True)
+
+        self._setup_map()
 
         self.resource_label_list.clear()
         self.add_labels()
@@ -356,6 +373,11 @@ class Kingdom:
         self.resource_label_list.clear()
         self.add_labels()
 
+    def _on_click_map_button(self, _: arcade.gui.UIOnClickEvent):
+        self.map.setup()
+
+        self.main_window.show_view(self.map)
+
     def _on_click_menu_button(self, _: arcade.gui.UIOnClickEvent):
         save_button = arcade.gui.UIFlatButton(text="Save Game", width=250, font_size=24)
         save_button.on_click = self._on_click_save_button
@@ -385,10 +407,12 @@ class Kingdom:
     def _on_click_back_button(self, _: arcade.gui.UIOnClickEvent):
         self.manager.clear()
         self.v_box.clear()
+        self._setup_map()
         self.setup_menu()
 
     def _on_click_save_button(self, _: arcade.gui.UIOnClickEvent):
         save_data = {
+            "turn_number": self._turn_number,
             "food": self._food,
             "gold": self._gold,
             "happiness": self._happiness,
@@ -398,12 +422,22 @@ class Kingdom:
             "workers": self._workers,
             "hospital": bool(self.hospital),
             "finance_office": bool(self.finance_office),
-            "defence_office": bool(self.defence_office)
+            "defence_office": bool(self.defence_office),
+            "swords_man": self.army.swords_man,
+            "bow_man": self.army.bow_man,
+            "cavalry": self.army.cavalry,
+            "pike_man": self.army.pike_man,
+            "canons": self.army.canons
         }
-        print(save_data)
+
         encoded_data = base64.b64encode(json.dumps(save_data).encode("utf-8"))
         with open(f"{PATH}/../data/Turn_{self._turn_number}", "wb") as f:
             f.write(encoded_data)
+
+    def _setup_map(self):
+        map_button = arcade.gui.UIFlatButton(text="Map", width=100, height=25, x=980, y=25)
+        map_button.on_click = self._on_click_map_button
+        self.manager.add(map_button)
 
     @staticmethod
     def _on_click_quit_button(_: arcade.gui.UIOnClickEvent):

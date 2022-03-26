@@ -135,6 +135,8 @@ class AdvancedUiFileDialogOpen(arcade.View):
         self.main_window = main_window
         self.main_view = main_view
 
+        arcade.set_background_color(arcade.color.SMOKY_BLACK)
+
     def setup(self) -> None:
         self.save_file_icon_list = arcade.SpriteList()
         self.save_file_names_list = LabelList()
