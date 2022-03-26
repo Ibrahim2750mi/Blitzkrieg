@@ -1,3 +1,5 @@
+import random
+
 import arcade
 import arcade.gui
 
@@ -46,9 +48,13 @@ class Battle(arcade.View):
 
         self.loaded_textures = []
 
+        self.occupied_places = None
+
     def setup(self):
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
+
+        self.occupied_places = []
 
         self.v_box = arcade.gui.UIBoxLayout(space_between=10)
 
@@ -70,6 +76,9 @@ class Battle(arcade.View):
 
         self.mouse_point = arcade.Sprite(f"{SUB_MAIN_PATH}mouse_point.png")
 
+        next_turn_button = arcade.gui.UIFlatButton(text="Next Turn", width=200, x=840, y=10, height=50)
+        next_turn_button.on_click = self._on_click_next_turn_button
+        self.manager.add(next_turn_button)
         eval(f"self.setup_battle_{self.army.battles_won}()")
 
     def general_setup(self):
@@ -84,7 +93,7 @@ class Battle(arcade.View):
     def setup_battle_0(self):
         for x in range(25, 800, 50):
             for y in range(125, 700, 50):
-                tile = Tile(x, y, "desert")
+                tile = Tile(x, y, random.choice(("desert", "grass", "forest")))
                 self.tile_list.append(tile)
                 self.border_list.append(tile.border_tile)
 
@@ -92,6 +101,8 @@ class Battle(arcade.View):
             for y in [425, 475, 525]:
                 sprite_unit = Unit(texture=self.loaded_textures[10], center_x=x,
                                    center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[1][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[1][1]
                 self.enemy_unit_list.append(sprite_unit)
 
         self.general_setup()
@@ -120,17 +131,17 @@ class Battle(arcade.View):
 
                 self.selected_tile_pos = [center_x, center_y]
 
-                if int(self.text_list[i + 1].text[0]) > 0:
+                if int(self.text_list[i + 1].text[0]) > 0 and (center_x, center_y) not in self.occupied_places:
                     sprite_unit = Unit(texture=self.loaded_textures[i + 5],
                                        center_x=center_x,
                                        center_y=center_y, index=i)
-
                     sprite_unit.attack = self.selected_unit.attack
-                    sprite_unit.defence = self.selected_unit.defence_percent
+                    sprite_unit.defence_percent = self.selected_unit.defence_percent
 
                     self.friendly_unit_list.append(sprite_unit)
 
                     self.text_list[i + 1].text = f"{int(self.text_list[i + 1].text[0]) - 1}"
+                    self.occupied_places.append((center_x, center_y))
 
             for unit in self.friendly_unit_list:
                 if unit.collides_with_point((x, y)):
@@ -166,6 +177,7 @@ class Battle(arcade.View):
                     self.unit_info = arcade.gui.UITextArea(text=str(unit), multiline=True,
                                                            height=150, text_color=(0, 0, 0))
                     attack_button = arcade.gui.UIFlatButton(text="Attack")
+                    attack_button.on_click = self._on_click_attack_button
                     self.v_box.add(self.unit_info)
                     self.v_box.add(attack_button)
                     self.manager.add(arcade.gui.UIAnchorWidget(
@@ -203,10 +215,53 @@ class Battle(arcade.View):
             self.loaded_textures.append(arcade.load_texture(f"{MAIN_PATH}enemy/{name}"))
 
     def _on_click_move_button(self, _: arcade.gui.UIOnClickEvent):
-        pass
+        if self.selected_friendly_unit.played:
+            text = arcade.gui.UITextArea(text="Already played with this unit", text_color=(255, 0, 0),
+                                         multiline=True)
+            if text not in self.v_box.children:
+                self.v_box.add(text)
+            return False
+        if abs(self.selected_tile_pos[0] - self.selected_friendly_unit.center_x) > 100:
+            return False
+        if abs(self.selected_tile_pos[1] - self.selected_friendly_unit.center_y) > 100:
+            return False
+        self.selected_friendly_unit.played = True
+        self.selected_friendly_unit.center_x = self.selected_tile_pos[0] - self.selected_friendly_unit.center_x
+        self.selected_friendly_unit.center_y = self.selected_tile_pos[1] - self.selected_friendly_unit.center_y
 
     def _on_click_attack_button(self, _: arcade.gui.UIOnClickEvent):
-        pass
+        if self.selected_friendly_unit.played:
+            text = arcade.gui.UITextArea(text="Already played with this unit", text_color=(255, 0, 0),
+                                         multiline=True)
+            if text not in self.v_box.children:
+                self.v_box.add(text)
+            return False
+        self.selected_enemy_unit.deduct_health(self.selected_friendly_unit.attack)
+        self.selected_friendly_unit.played = True
+        self.unit_info.text = str(self.selected_enemy_unit)
 
     def _on_click_next_turn_button(self, _: arcade.gui.UIOnClickEvent):
-        pass
+        for enemy in self.enemy_unit_list:
+            if enemy.health < 0:
+                self.enemy_unit_list.remove(enemy)
+            adjacent_unit, distance = arcade.get_closest_sprite(enemy, self.friendly_unit_list)
+            if distance <= 50 ** (2 ** 0.5):
+                adjacent_unit.deduct_health(enemy.attack)
+            else:
+                move_x = adjacent_unit.center_x - enemy.center_x
+                move_y = adjacent_unit.center_y - enemy.center_y
+                if move_x > 100:
+                    move_x = 100
+                elif move_x < -100:
+                    move_x = -100
+                if move_y > 100:
+                    move_y = 100
+                elif move_y < -100:
+                    move_y = -100
+                if (enemy.center_x + move_x, enemy.center_y + move_y) not in self.occupied_places:
+                    enemy.center_x += move_x
+                    enemy.center_y += move_y
+        for friend in self.friendly_unit_list:
+            friend.played = False
+            if friend.health < 0:
+                self.friendly_unit_list.remove(friend)

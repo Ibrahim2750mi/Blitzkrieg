@@ -7,7 +7,7 @@ class Unit(arcade.Sprite):
     def __init__(self, texture, center_x, center_y, index, enemy: bool = False):
         super(Unit, self).__init__(texture=texture, center_x=center_x, center_y=center_y)
 
-        self.population = 10
+        self.alive = 10
         self.injured = 0
         self.dead = 0
 
@@ -15,15 +15,35 @@ class Unit(arcade.Sprite):
 
         self.enemy = enemy
 
-        self.attack = None
+        self._attack = None
         self.defence_percent = None
 
         self.index = index
-        self._name = NAME[self.index + 1]
+        self._name = NAME.get(self.index + 1, "None")
+
+        self.played = False
 
     def __str__(self):
-        return f"\t{self._name}{['(enemy)' if self.enemy else ''][0]}:\n\nAlive: {self.population}\nInjured: " \
-               f"{self.injured}\nDead: {self.dead}"
+        return f"\t{self._name}{['(enemy)' if self.enemy else ''][0]}:\n\nAlive: {self.alive}\nInjured: " \
+               f"{self.injured}\nDead: {self.dead}\nHealth: {self.health}"
+
+    def deduct_health(self, value):
+        self.health -= (1 - self.defence_percent) * value
+        if 10 * int(self.health / 10) + 1 != self.alive:
+            self.injured = (100 - 10 * int(self.health / 10)) / 10
+        self.alive -= self.injured
+
+        if self.injured > 1:
+            self.injured -= 1
+            self.dead += 1
+
+    @property
+    def attack(self):
+        return self._attack * self.alive // 10
+
+    @attack.setter
+    def attack(self, val):
+        self._attack = val
 
 
 class Army:
