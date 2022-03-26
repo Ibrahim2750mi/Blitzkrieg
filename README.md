@@ -22,3 +22,4 @@ On Windows<br>
 
 1. Assets located in `\resource` and `\units` are taken from https://github.com/yairm210/Unciv/
 2. Assets located in `\buildings` and `\misc\save.png` have been taken from https://www.vecteezy.com/
+   <br>Detailed credits in credits.md

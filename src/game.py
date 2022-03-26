@@ -23,12 +23,17 @@ class Game(arcade.View):
         # player
         self.player = None
         self.window = window
+
+        self.loaded_sounds = None
+        self.music = None
+        self.music_player = None
         # Separate variable that holds the player sprite
 
         arcade.set_background_color(arcade.color.SMOKY_BLACK)
 
     def setup(self) -> None:
         """Set up the game here. Call this function to restart the game."""
+        self.music = arcade.Sound(f"{cfg.PATH}/../assets/background_music/Call_to_Adventure_Ambient.wav")
 
         self.land_tile_list = arcade.SpriteList(use_spatial_hash=True)
         self.border_land_tile_list = arcade.SpriteList(use_spatial_hash=True)
@@ -38,6 +43,8 @@ class Game(arcade.View):
                                             self)
 
         self.player.setup_terrain()
+
+        self.music.play(loop=True)
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         """Called when keyboard is pressed"""
