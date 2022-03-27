@@ -1,5 +1,3 @@
-import random
-
 import arcade
 import arcade.gui
 
@@ -10,7 +8,7 @@ from tiles.tile import Tile
 
 MAIN_PATH = f"{PATH}/../assets/units/"
 SUB_MAIN_PATH = f"{PATH}/../assets/misc/"
-NUMBER_CORRESPONDENCE_FOR_UNITS = {1: (10, 0.33), 2: (10, 0.1), 3: (15, 0.05), 4: (10, 0.1), 5: (25, 0)}
+NUMBER_CORRESPONDENCE_FOR_UNITS = {1: (10, 0.33), 2: (10, 0.1), 3: (15, 0.05), 4: (10, 0.1), 5: (30, -0.05)}
 
 
 class Battle(arcade.View):
@@ -51,7 +49,12 @@ class Battle(arcade.View):
 
         self.occupied_places = None
 
+        self.music = None
+        self.music_player = None
+
     def setup(self):
+        self.music = arcade.Sound(f"{PATH}/../assets/background_music/Lord_of_the_Land _Ambient.wav")
+
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
 
@@ -85,6 +88,8 @@ class Battle(arcade.View):
         self.manager.add(next_turn_button)
         eval(f"self.setup_battle_{self.army.battles_won}()")
 
+        self.music_player = self.music.play(volume=0.1, loop=True)
+
     def general_setup(self):
         for i, unit in enumerate(self.army_supplied_list, start=1):
             sprite_unit = Unit(texture=self.loaded_textures[i - 1], center_x=50 + (i * 75), center_y=40, index=i - 1)
@@ -95,9 +100,14 @@ class Battle(arcade.View):
                                               start_y=25, color=(0, 0, 0)))
 
     def setup_battle_0(self):
-        for x in range(25, 800, 50):
+        for x in range(25, 400, 50):
             for y in range(125, 700, 50):
-                tile = Tile(x, y, random.choice(("desert", "grass", "forest")))
+                tile = Tile(x, y, "desert")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+        for x in range(425, 800, 50):
+            for y in range(125, 700, 50):
+                tile = Tile(x, y, "forest")
                 self.tile_list.append(tile)
                 self.border_list.append(tile.border_tile)
 
@@ -110,6 +120,400 @@ class Battle(arcade.View):
                 self.enemy_unit_list.append(sprite_unit)
 
         self.general_setup()
+
+    def setup_battle_1(self):
+        for x in range(25, 800, 50):
+            for y in range(125, 500, 50):
+                tile = Tile(x, y, "grass")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+        for x in range(25, 800, 50):
+            for y in range(525, 700, 50):
+                tile = Tile(x, y, "desert")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+
+        for x in [625, 675, 725]:
+            for y in [425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[10], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[1][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[1][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [525, 575]:
+            for y in [325, 375]:
+                sprite_unit = Unit(texture=self.loaded_textures[14], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[5][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[5][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        self.general_setup()
+
+    def setup_battle_2(self):
+        for x in range(25, 400, 50):
+            for y in range(125, 700, 50):
+                tile = Tile(x, y, "grass")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+        for x in range(425, 800, 50):
+            for y in range(125, 700, 50):
+                tile = Tile(x, y, "forest")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+
+        for x in [625, 675, 725]:
+            for y in [425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[10], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[1][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[1][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [625, 675, 725]:
+            for y in [325, 375]:
+                sprite_unit = Unit(texture=self.loaded_textures[14], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[5][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[5][1]
+                self.enemy_unit_list.append(sprite_unit)
+        for x in [525, 575]:
+            for y in [375, 425]:
+                sprite_unit = Unit(texture=self.loaded_textures[13], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[4][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[4][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        self.general_setup()
+
+    def setup_battle_3(self):
+        for x in range(25, 800, 50):
+            for y in range(125, 500, 50):
+                tile = Tile(x, y, "grass")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+        for x in range(25, 800, 50):
+            for y in range(525, 700, 50):
+                tile = Tile(x, y, "forest")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+
+        for x in [625, 675, 725]:
+            for y in [425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[10], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[1][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[1][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [625, 675, 725]:
+            for y in [275, 325, 375]:
+                sprite_unit = Unit(texture=self.loaded_textures[14], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[5][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[5][1]
+                self.enemy_unit_list.append(sprite_unit)
+        for x in [525, 575]:
+            for y in [325, 375, 425, 475]:
+                sprite_unit = Unit(texture=self.loaded_textures[13], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[4][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[4][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        self.general_setup()
+
+    def setup_battle_4(self):
+        for x in range(25, 450, 50):
+            for y in range(125, 700, 50):
+                tile = Tile(x, y, "mountain")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+        for x in range(475, 800, 50):
+            for y in range(125, 700, 50):
+                tile = Tile(x, y, "forest")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+
+        for x in [625, 675, 725]:
+            for y in [425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[10], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[1][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[1][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [625, 675, 725]:
+            for y in [275, 325, 375]:
+                sprite_unit = Unit(texture=self.loaded_textures[14], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[5][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[5][1]
+                self.enemy_unit_list.append(sprite_unit)
+        for x in [525, 575]:
+            for y in [275, 325, 375, 425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[13], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[4][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[4][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        self.general_setup()
+
+    def setup_battle_5(self):
+        for x in range(25, 800, 50):
+            for y in range(125, 500, 50):
+                tile = Tile(x, y, "mountain")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+
+        for x in range(25, 800, 50):
+            for y in range(525, 700, 50):
+                tile = Tile(x, y, "grass")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+
+        for x in [625, 675, 725]:
+            for y in [425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[10], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[1][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[1][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [625, 675, 725]:
+            for y in [275, 325, 375]:
+                sprite_unit = Unit(texture=self.loaded_textures[14], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[5][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[5][1]
+                self.enemy_unit_list.append(sprite_unit)
+        for x in [525, 575]:
+            for y in [275, 325, 375, 425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[13], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[4][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[4][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [225, 275]:
+            for y in [425, 475]:
+                sprite_unit = Unit(texture=self.loaded_textures[11], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[2][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[2][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        self.general_setup()
+
+    def setup_battle_6(self):
+        for x in range(25, 250, 50):
+            for y in range(125, 700, 50):
+                tile = Tile(x, y, "desert")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+
+        for x in range(275, 800, 50):
+            for y in range(125, 700, 50):
+                tile = Tile(x, y, "forest")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+
+        for x in [625, 675, 725]:
+            for y in [425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[10], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[1][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[1][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [625, 675, 725]:
+            for y in [275, 325, 375]:
+                sprite_unit = Unit(texture=self.loaded_textures[14], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[5][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[5][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [525, 575]:
+            for y in [275, 325, 375, 425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[13], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[4][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[4][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [225, 275, 325]:
+            for y in [425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[11], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[2][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[2][1]
+                self.enemy_unit_list.append(sprite_unit)
+        self.general_setup()
+
+    def setup_battle_7(self):
+        for x in range(25, 800, 50):
+            for y in range(125, 250, 50):
+                tile = Tile(x, y, "grass")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+
+        for x in range(25, 800, 50):
+            for y in range(275, 700, 50):
+                tile = Tile(x, y, "desert")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+
+        for x in [625, 675, 725]:
+            for y in [425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[10], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[1][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[1][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [625, 675, 725]:
+            for y in [275, 325, 375]:
+                sprite_unit = Unit(texture=self.loaded_textures[14], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[5][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[5][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [525, 575]:
+            for y in [275, 325, 375, 425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[13], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[4][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[4][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [225, 275, 325, 375]:
+            for y in [425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[11], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[2][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[2][1]
+                self.enemy_unit_list.append(sprite_unit)
+        self.general_setup()
+
+    def setup_battle_8(self):
+        for x in range(25, 250, 50):
+            for y in range(125, 700, 50):
+                tile = Tile(x, y, "grass")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+
+        for x in range(275, 800, 50):
+            for y in range(125, 700, 50):
+                tile = Tile(x, y, "desert")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+
+        for x in [625, 675, 725]:
+            for y in [425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[10], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[1][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[1][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [625, 675, 725]:
+            for y in [275, 325, 375]:
+                sprite_unit = Unit(texture=self.loaded_textures[14], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[5][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[5][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [525, 575]:
+            for y in [275, 325, 375, 425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[13], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[4][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[4][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [225, 275, 325, 375]:
+            for y in [425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[11], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[2][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[2][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [225, 275]:
+            for y in [325, 375]:
+                sprite_unit = Unit(texture=self.loaded_textures[12], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[3][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[3][1]
+                self.enemy_unit_list.append(sprite_unit)
+        self.general_setup()
+
+    def setup_battle_9(self):
+        for x in range(25, 800, 50):
+            for y in range(125, 250, 50):
+                tile = Tile(x, y, "mountain")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+
+        for x in range(25, 800, 50):
+            for y in range(275, 700, 50):
+                tile = Tile(x, y, "river")
+                self.tile_list.append(tile)
+                self.border_list.append(tile.border_tile)
+
+        for x in [625, 675, 725]:
+            for y in [425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[10], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[1][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[1][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [625, 675, 725]:
+            for y in [275, 325, 375]:
+                sprite_unit = Unit(texture=self.loaded_textures[14], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[5][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[5][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [525, 575]:
+            for y in [275, 325, 375, 425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[13], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[4][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[4][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [175, 225, 275, 325, 375]:
+            for y in [425, 475, 525]:
+                sprite_unit = Unit(texture=self.loaded_textures[11], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[2][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[2][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        for x in [175, 225, 275, 325, 375]:
+            for y in [275, 325, 375]:
+                sprite_unit = Unit(texture=self.loaded_textures[12], center_x=x,
+                                   center_y=y, index=0, enemy=True)
+                sprite_unit.attack = NUMBER_CORRESPONDENCE_FOR_UNITS[3][0]
+                sprite_unit.defence_percent = NUMBER_CORRESPONDENCE_FOR_UNITS[3][1]
+                self.enemy_unit_list.append(sprite_unit)
+
+        self.general_setup()
+
+    def on_key_press(self, symbol: int, modifiers: int):
+        if symbol == 119:
+            self.enemy_unit_list.clear()
+        elif symbol == 120:
+            self.friendly_unit_list.clear()
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         for unit_icon in self.unit_icon_list:
@@ -159,6 +563,7 @@ class Battle(arcade.View):
                     self.unit_info = arcade.gui.UITextArea(text=str(unit), multiline=True,
                                                            height=150, text_color=(0, 0, 0))
                     move_button = arcade.gui.UIFlatButton(text="Move")
+                    move_button.on_click = self._on_click_move_button
                     self.v_box.add(self.unit_info)
                     self.v_box.add(move_button)
                     self.manager.add(arcade.gui.UIAnchorWidget(
@@ -227,7 +632,8 @@ class Battle(arcade.View):
         if self.selected_friendly_unit.played:
             text = arcade.gui.UITextArea(text="Already played with this unit", text_color=(255, 0, 0),
                                          multiline=True)
-            if text not in self.v_box.children:
+
+            if len(self.v_box.children) < 3:
                 self.v_box.add(text)
             return False
         if abs(self.selected_tile_pos[0] - self.selected_friendly_unit.center_x) > 100:
@@ -235,18 +641,19 @@ class Battle(arcade.View):
         if abs(self.selected_tile_pos[1] - self.selected_friendly_unit.center_y) > 100:
             return False
         self.selected_friendly_unit.played = True
-        self.selected_friendly_unit.center_x = self.selected_tile_pos[0] - self.selected_friendly_unit.center_x
-        self.selected_friendly_unit.center_y = self.selected_tile_pos[1] - self.selected_friendly_unit.center_y
+        self.selected_friendly_unit.center_x = self.selected_tile_pos[0]
+        self.selected_friendly_unit.center_y = self.selected_tile_pos[1]
 
     def _on_click_attack_button(self, _: arcade.gui.UIOnClickEvent):
         if self.selected_friendly_unit.played:
             text = arcade.gui.UITextArea(text="Already played with this unit", text_color=(255, 0, 0),
                                          multiline=True)
-            if text not in self.v_box.children:
+
+            if len(self.v_box.children) < 3:
                 self.v_box.add(text)
             return False
-        self.selected_enemy_unit.deduct_health(self.selected_friendly_unit.attack)
-        self.loaded_sounds[self.selected_friendly_unit.index].play()
+        self.selected_enemy_unit.deduct_health(self.selected_friendly_unit.attack, self.selected_friendly_unit.name)
+        self.loaded_sounds[self.selected_friendly_unit.index].play(volume=0.7)
         self.selected_friendly_unit.played = True
         self.unit_info.text = str(self.selected_enemy_unit)
 
@@ -254,9 +661,11 @@ class Battle(arcade.View):
         for enemy in self.enemy_unit_list:
             if enemy.health < 0:
                 self.enemy_unit_list.remove(enemy)
+            if not self.friendly_unit_list:
+                break
             adjacent_unit, distance = arcade.get_closest_sprite(enemy, self.friendly_unit_list)
             if distance <= 50 ** (2 ** 0.5):
-                adjacent_unit.deduct_health(enemy.attack)
+                adjacent_unit.deduct_health(enemy.attack, enemy.name)
             else:
                 move_x = adjacent_unit.center_x - enemy.center_x
                 move_y = adjacent_unit.center_y - enemy.center_y
@@ -271,7 +680,33 @@ class Battle(arcade.View):
                 if (enemy.center_x + move_x, enemy.center_y + move_y) not in self.occupied_places:
                     enemy.center_x += move_x
                     enemy.center_y += move_y
+
+        if len(self.enemy_unit_list) == 0:
+            self.army.battles_won += 1
+            self.army.battles += 1
+            if self.army.morale < 100:
+                self.army.morale += 5
+            if self.army.morale > 100:
+                self.army.morale = 100
+
+            self.manager.clear()
+            self.music.stop(self.music_player)
+            self.main_view.music.play(loop=True, volume=0.1)
+            self.main_window.show_view(self.main_view)
+
         for friend in self.friendly_unit_list:
             friend.played = False
             if friend.health < 0:
                 self.friendly_unit_list.remove(friend)
+
+        if len(self.friendly_unit_list) == 0:
+            self.army.battles += 1
+            if self.army.morale <= 100:
+                self.army.morale -= 5
+            self.army.null()
+            self.main_view.player.population -= self.army.population_in_army()
+            self.main_view.player.soldiers = 0
+            self.manager.clear()
+            self.music.stop(self.music_player)
+            self.main_view.music.play(loop=True, volume=0.1)
+            self.main_window.show_view(self.main_view)

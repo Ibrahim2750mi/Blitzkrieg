@@ -1,3 +1,5 @@
+import time
+
 import arcade
 import arcade.gui
 
@@ -89,6 +91,9 @@ class Map(arcade.View):
 
         self.manager.draw()
         self.heading_text.draw()
+        if self.army.battles_won == 10:
+            time.sleep(1)
+            arcade.exit()
 
     def label_info_box(self):
         swords_man_label = arcade.gui.UILabel(text="Assign swords man unit:", font_size=11, width=250,
@@ -159,9 +164,11 @@ class Map(arcade.View):
     def _on_click_battle_button(self, _: arcade.gui.UIOnClickEvent):
         self.main_view.player.battle.army_supplied_list = self.battle_list
         self.main_view.player.battle.setup()
+        self.main_view.music.stop(self.main_view.music_player)
         self.main_window.show_view(self.main_view.player.battle)
 
     def _on_click_back_button(self, _: arcade.gui.UIOnClickEvent):
+        self.main_window.hide_view()
         self.main_window.show_view(self.main_view)
 
     def _on_click_save_button_manage_army(self, _: arcade.gui.UIOnClickEvent):

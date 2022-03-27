@@ -257,6 +257,9 @@ class Kingdom:
         self.army.cavalry = decoded_data.get("cavalry", 0)
         self.army.pike_man = decoded_data.get("pike_man", 0)
         self.army.canons = decoded_data.get("canons", 0)
+        self.army.battles = decoded_data.get("battles", 0)
+        self.army.battles_won = decoded_data.get("battles_won", 0)
+        self.army.morale = decoded_data.get("morale", 100)
         # fixes a bug where the buttons weren't working
 
         building_sprite_list = self.world.get_sprite_list(name="buildings")
@@ -427,10 +430,14 @@ class Kingdom:
             "bow_man": self.army.bow_man,
             "cavalry": self.army.cavalry,
             "pike_man": self.army.pike_man,
-            "canons": self.army.canons
+            "canons": self.army.canons,
+            "battles": self.army.battles,
+            "battles_won": self.army.battles_won,
+            "morale": self.army.morale
         }
 
         encoded_data = base64.b64encode(json.dumps(save_data).encode("utf-8"))
+        print(f"{PATH}/../data/Turn_{self._turn_number}")
         with open(f"{PATH}/../data/Turn_{self._turn_number}", "wb") as f:
             f.write(encoded_data)
 
@@ -475,6 +482,10 @@ class Kingdom:
     @property
     def population(self):
         return self._population
+
+    @population.setter
+    def population(self, number):
+        self._population = number
 
     @property
     def unemployed(self):

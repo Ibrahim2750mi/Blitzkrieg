@@ -44,7 +44,7 @@ class Game(arcade.View):
 
         self.player.setup_terrain()
 
-        self.music.play(loop=True)
+        self.music_player = self.music.play(loop=True, volume=0.1)
 
     def on_key_press(self, key: int, modifiers: int) -> None:
         """Called when keyboard is pressed"""

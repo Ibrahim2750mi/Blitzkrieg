@@ -174,6 +174,8 @@ class AdvancedUiFileDialogOpen(arcade.View):
     def on_update(self, delta_time: float):
         for button in self.button_list:
             if button.clicked:
+                self.widget_manager.clear()
+                self.v_box.clear()
                 self.main_view.player.switched_view(button.file_name)
                 self.main_window.show_view(self.main_view)
 

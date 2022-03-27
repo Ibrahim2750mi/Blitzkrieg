@@ -18,6 +18,18 @@ On Windows<br>
 `py -m pip install -r requirements.txt`<br>
 `py game.py`<br>
 
+# Playing the Game
+
+You can manage your kingdom by clicking on the office, building an army building is important. Buildings like hospital,
+finance office can provide some kingdom boost (although I had to cut off some features due to time limit). You can open
+the menu by clicking on the cog wheel icon on the top left of the screen. You can go to battle by clicking on the map
+button, winning battles is your main objective and taking all the cities under your control. Some features were not
+implemented like dialogues, generals etc. You may see alot of redundant code that is because, they might have been used
+if I had more time. Anyway good luck winning your kingdom back from your evil twin.
+
+Cheat:
+When in battle press "w" to kill all enemies.
+
 # Credits
 
 1. Assets located in `\resource` and `\units` are taken from https://github.com/yairm210/Unciv/

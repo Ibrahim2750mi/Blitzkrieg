@@ -27,11 +27,13 @@ class Unit(arcade.Sprite):
         return f"\t{self.name}{['(enemy)' if self.enemy else ''][0]}:\n\nAlive: {self.alive}\nInjured: " \
                f"{self.injured}\nDead: {self.dead}\nHealth: {self.health}"
 
-    def deduct_health(self, value):
+    def deduct_health(self, value, name=""):
+        if name == "Pike Man" and self.name == "Cavalry":
+            value += 15
         self.health -= (1 - self.defence_percent) * value
         if 10 * int(self.health / 10) + 1 != self.alive:
             self.injured = (100 - 10 * int(self.health / 10)) / 10
-        self.alive -= self.injured
+        self.alive = 10 - self.injured
 
         if self.injured > 1:
             self.injured -= 1
@@ -75,3 +77,13 @@ class Army:
         if self.morale > 80:
             ret += 3
         return ret
+
+    def null(self):
+        self.swords_man = 0
+        self.bow_man = 0
+        self.cavalry = 0
+        self.pike_man = 0
+        self.canons = 0
+
+    def population_in_army(self):
+        return 10 * (self.swords_man + self.bow_man + self.cavalry + self.pike_man + self.canons)
